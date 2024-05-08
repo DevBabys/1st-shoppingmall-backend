@@ -4,3 +4,4 @@
 * Gradle 8.5
 * Spring Boot 3.2.5
 * Port Number : 8888
+* Branch : 은별 - eunbyeol
