@@ -10,10 +10,4 @@ class HelloWorldController {
     fun hello(): String {
         return "Hello, World!"
     }
-
-    @GetMapping("/test")
-    fun getTest(): String {
-        return "Test mapping"
-    }
-
 }
