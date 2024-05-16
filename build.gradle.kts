@@ -26,16 +26,36 @@ repositories {
 }
 
 dependencies {
+	// SpringBoot Web & Template & JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	// Kotlin
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	compileOnly("org.projectlombok:lombok")
+
+	// SpringBoot Devtools
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.h2database:h2")
+
+	// Lombok
+	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	// H2
+	//runtimeOnly("com.h2database:h2:2.2.224")
+
+	// MySQL
+	implementation("mysql:mysql-connector-java:8.0.33")
+
+	// Spring Security
+	implementation("org.springframework.boot:spring-boot-starter-security")
+
+	// JWT
+	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 }
 
 tasks.withType<KotlinCompile> {

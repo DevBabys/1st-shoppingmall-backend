@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
 class HeaderController {
-    @GetMapping("member/login")
-    fun login(model: Model) : String {
+    @GetMapping("user/login")
+    fun getLogin(model: Model): String {
         model.addAttribute("title", "login")
-        return "member/login"
+        return "user/login"
     }
 
-    @GetMapping("member/sign")
-    fun sign(model: Model) : String {
+    @GetMapping("user/sign")
+    fun getSign(model: Model): String {
         model.addAttribute("title", "sign")
-        return "member/sign"
+        return "user/sign"
     }
 }
