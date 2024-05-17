@@ -1,6 +1,5 @@
-package com.devbabys.shoppingmall.Entity
+package com.devbabys.shoppingmall.Model
 
-import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -11,14 +10,11 @@ import lombok.Setter
 @Getter
 @Setter
 @Entity
-class User (
+class Product (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id : Long? = null,
-    @Column(length = 20, unique = true)
-    var email : String,
-    @Column(length = 300)
-    var password : String,
-    @Column(length = 20)
-    var userName : String
-)
+    var userId: Long?,
+    var title: String,
+    var content: String
+    )

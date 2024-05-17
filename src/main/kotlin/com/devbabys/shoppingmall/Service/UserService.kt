@@ -1,8 +1,10 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.Entity.User
+import com.devbabys.shoppingmall.Model.User
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -11,6 +13,7 @@ class UserService {
     @Autowired
     lateinit var repo: UserRepo
 
+    @Autowired
     val passwordEncoder = BCryptPasswordEncoder()
 
     fun sign(email: String, password: String, userName: String): Boolean {
@@ -49,5 +52,13 @@ class UserService {
             print("user not exists")
             return false
         }
+    }
+
+    fun loadUserByEnauk(email: String): UserDetails {
+        val user: User = repo.findByEmail(email)
+            ?: throw UsernameNotFoundException("User not found with username: $email")
+        return org.springframework.security.core.userdetails.User(
+            user.email, user.password, emptyList()
+        )
     }
 }
