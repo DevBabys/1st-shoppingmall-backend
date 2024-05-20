@@ -23,7 +23,7 @@ class JwtUtil {
             .claims(claims)
             .subject(email)
             .issuedAt(Date())
-            .expiration(getAfter30Days(30))
+            .expiration( Date(System.currentTimeMillis() + 60 * 24 * 1000 * 30) ) // 30 Days
             .signWith(secretKey)
             .compact()
     }

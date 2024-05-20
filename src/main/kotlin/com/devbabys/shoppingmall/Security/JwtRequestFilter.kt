@@ -22,12 +22,12 @@ class JwtRequestFilter(
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val authorizationHeader = request.getHeader("Authorization")
-
         var email: String? = null
         var jwt: String? = null
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7)
+            println("########## JwtRequestFilter : doFilterInternal : authorizationHeader : [jwt] $jwt ##########")
             email = jwtUtil.extractedEmail(jwt)
         }
 
