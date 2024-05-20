@@ -1,16 +1,16 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.Model.AuthenticationRequest
-import com.devbabys.shoppingmall.Model.AuthResponse
+import com.devbabys.shoppingmall.DTO.AuthenticationRequest
+import com.devbabys.shoppingmall.DTO.AuthenticationResponse
 import com.devbabys.shoppingmall.Security.JwtUtil
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,9 +22,8 @@ class JwtService(
     @Autowired
     private val userDetailsService: CustomUserDetailsService
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(JwtService::class.java)
 
-    fun createAuthenticationToken(authenticationRequest: AuthenticationRequest): AuthResponse {
+    fun createAuthenticationToken(authenticationRequest: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponse {
         try {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(authenticationRequest.email, authenticationRequest.password)
@@ -34,19 +33,27 @@ class JwtService(
         } catch (e: BadCredentialsException) {
             throw RuntimeException("INVALID_CREDENTIALS", e)
         }
-        logger.debug("Authentication request email: {}", authenticationRequest.email)
-        println("##### test ${authenticationRequest.email}")
 
         val userDetails: UserDetails = userDetailsService.loadUserByUsername(authenticationRequest.email)
-
-        logger.debug("Loaded user details email: {}", userDetails.username)
         val jwt: String = jwtUtil.generateToken(userDetails.username)
 
+        var cookie = Cookie("jwt", jwt)
+        cookie.isHttpOnly = true
+        response.addCookie(cookie)
 
-        return AuthResponse(jwt)
+        return AuthenticationResponse(jwt)
     }
 
-        fun test(): String {
-            return "200 OK"
+    fun test(authorizationHeader: String): String {
+        val jwt = authorizationHeader.substring(7)
+        var email = jwtUtil.extractedEmail(jwt)
+        if (jwtUtil.validateToken(jwt, userDetailsService.loadUserByUsername(email).toString()) ) {
+
+            // 처리 로직 작성
+            return "Post request processed successfully"
         }
+        else {
+            throw RuntimeException("Invalid JWT Token")
+        }
+    }
 }

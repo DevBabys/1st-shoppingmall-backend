@@ -18,11 +18,13 @@ class SecurityConfig(
     @Bean
     @Throws(Exception::class)
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        println("########## Config : SecurityConfig : authenticationManager ##########")
         return authenticationConfiguration.getAuthenticationManager()
+        //return authenticationConfiguration.authenticationManager as ProviderManager
     }
 
     @Bean
-    fun passwordEncoder() = BCryptPasswordEncoder()
+    fun passwordEncoder() = BCryptPasswordEncoder(10)
 
     private val allowedUrls = arrayOf("/",
         "/user/sign", "/user/login", "/user/auth", "user/test",
@@ -38,4 +40,7 @@ class SecurityConfig(
         }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }	// 세션 미사용
         .build()
+
+
+
 }

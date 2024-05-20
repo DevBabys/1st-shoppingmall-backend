@@ -3,7 +3,7 @@ package com.devbabys.shoppingmall.Controller
 import com.devbabys.shoppingmall.Model.Product
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.ProductService
-import com.devbabys.shoppingmall.Model.ProductRequest
+import com.devbabys.shoppingmall.DTO.ProductRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

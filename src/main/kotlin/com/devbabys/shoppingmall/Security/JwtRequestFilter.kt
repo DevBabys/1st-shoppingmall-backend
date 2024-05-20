@@ -23,16 +23,16 @@ class JwtRequestFilter(
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val authorizationHeader = request.getHeader("Authorization")
 
-        var username: String? = null
+        var email: String? = null
         var jwt: String? = null
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7)
-            username = jwtUtil.extractedEmail(jwt)
+            email = jwtUtil.extractedEmail(jwt)
         }
 
-        if (username != null && SecurityContextHolder.getContext().authentication == null) {
-            val userDetails = customUserDetailsService.loadUserByUsername(username)
+        if (email != null && SecurityContextHolder.getContext().authentication == null) {
+            val userDetails = customUserDetailsService.loadUserByUsername(email)
             if (jwtUtil.validateToken(jwt!!, userDetails.username)) {
                 val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.authorities

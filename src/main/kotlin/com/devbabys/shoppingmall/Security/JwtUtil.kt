@@ -15,7 +15,7 @@ class JwtUtil {
 //    @Value("\${jwt.expiration.date}")
 //    private lateinit var expiration: String
 
-    private val secretKey = Jwts.SIG.HS256.key().build();
+    private val secretKey = Jwts.SIG.HS512.key().build();
 
     fun generateToken(email: String): String {
         val claims: Map<String, Any> = HashMap()
@@ -23,6 +23,7 @@ class JwtUtil {
             .claims(claims)
             .subject(email)
             .issuedAt(Date())
+            .expiration(getAfter30Days(30))
             .signWith(secretKey)
             .compact()
     }
@@ -50,13 +51,13 @@ class JwtUtil {
         return (extractedEmail == email && !isTokenExpired(token))
     }
 
-//    fun getAfter30Days(time: Int): Date {
-//        val now = Date()
-//        val calendar = Calendar.getInstance()
-//        calendar.time = now
-//        calendar.add(Calendar.DAY_OF_MONTH, time) // 현재 시간에서 30일 후
-//        val expirationDate = calendar.time
-//
-//        return expirationDate
-//    }
+    fun getAfter30Days(time: Int): Date {
+        val now = Date()
+        val calendar = Calendar.getInstance()
+        calendar.time = now
+        calendar.add(Calendar.DAY_OF_MONTH, time) // 현재 시간에서 30일 후
+        val expirationDate = calendar.time
+
+        return expirationDate
+    }
 }

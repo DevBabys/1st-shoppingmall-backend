@@ -53,12 +53,4 @@ class UserService {
             return false
         }
     }
-
-    fun loadUserByEnauk(email: String): UserDetails {
-        val user: User = repo.findByEmail(email)
-            ?: throw UsernameNotFoundException("User not found with username: $email")
-        return org.springframework.security.core.userdetails.User(
-            user.email, user.password, emptyList()
-        )
-    }
 }
