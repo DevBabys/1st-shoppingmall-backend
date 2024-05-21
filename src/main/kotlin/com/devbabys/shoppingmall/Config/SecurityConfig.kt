@@ -28,6 +28,7 @@ class SecurityConfig(
 
     private val allowedUrls = arrayOf("/",
         "/user/sign", "/user/login", "/user/auth", "user/test",
+        "/cookie/getCookie", "/cookie/setCookie",
         "/product/create"
     )
 

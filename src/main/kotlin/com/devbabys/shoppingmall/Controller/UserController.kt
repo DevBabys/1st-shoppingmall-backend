@@ -43,15 +43,21 @@ class UserController(
 
     // 로그인
     @PostMapping("user/login")
-    @ResponseBody
     fun postLogin(model: Model,
                   @RequestParam(value="email") email: String,
                   @RequestParam(value="password") password: String,
                   response: HttpServletResponse
     ): String {
         var authenticationRequest = AuthenticationRequest(email, password)
+        var result = userService.login(authenticationRequest, response)
 
-        return ""
+        model.addAttribute("result", result)
+
+        return if (result) {
+            "redirect:/"
+        } else {
+            "user/login"
+        }
     }
 
     @GetMapping("user/test")

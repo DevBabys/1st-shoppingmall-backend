@@ -10,7 +10,7 @@
 
     <!-- 내용 -->
     <h1>Login</h1>
-    <form action="/user/test" method="post">
+    <form action="/user/login" method="post">
         email:<br/>
         <input name="email" type="text" />
         <br/>
@@ -18,8 +18,8 @@
         <input name="password" type="password" />
         <input type="submit" value="submit">
     </form>
-    <div th:if="${result}">
-        <span>로그인</span>
+    <div th:if="${result == false}">
+        <span>로그인에 실패했습니다.</span>
     </div>
     <!-- 푸터 포함 -->
     <div th:replace="~{footer :: footer}"></div>

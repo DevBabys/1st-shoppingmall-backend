@@ -37,10 +37,6 @@ class JwtService(
         val userDetails: UserDetails = userDetailsService.loadUserByUsername(authenticationRequest.email)
         val jwt: String = jwtUtil.generateToken(userDetails.username)
 
-        var cookie = Cookie("jwt", jwt)
-        cookie.isHttpOnly = true
-        response.addCookie(cookie)
-
         return AuthenticationResponse(jwt)
     }
 

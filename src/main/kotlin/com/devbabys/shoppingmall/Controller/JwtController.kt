@@ -28,9 +28,4 @@ class JwtController (
 
         return "\"token\" : \"${jwt.token}\""
     }
-
-//    @GetMapping("user/test")
-//    fun test(@RequestHeader("Authorization") authorizationHeader: String): String {
-//        return test(authorizationHeader).toString()
-//    }
 }
