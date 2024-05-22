@@ -27,7 +27,7 @@ class SecurityConfig(
     fun passwordEncoder() = BCryptPasswordEncoder(10)
 
     private val allowedUrls = arrayOf("/",
-        "/user/sign", "/user/login", "/user/auth", "user/test",
+        "/user/sign", "/user/login", "user/logout",
         "/cookie/getCookie", "/cookie/setCookie",
         "/product/create"
     )

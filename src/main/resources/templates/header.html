@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Header</title>
+    <style>
+        a {font-size=30px;}
+    </style>
 </head>
 <body>
     <!-- 헤더 내용 -->
@@ -13,19 +16,18 @@
                 Dev Babys Mall
             </a>
         </span>
-        <div th:if="${result}">
-            <span>로그인</span>
+        <div name="divUserContainer">
+            <div th:if="${token != null}">
+                <span> 로그인 상태 </span>
+                <a href="/user/logout">로그아웃</a>
+            </div>
+            <div th:if="${token == null}">
+                <span style="float:right;">
+                    <a href="/user/login">로그인</a>
+                    <a href="/user/sign">회원가입</a>
+                </span>
+            </div>
         </div>
-        <div th:if="${token != null}">
-            <span> 로그인 상태 </span>
-        </div>
-        <div th:if="${token == null}">
-            <span style="float:right;">
-                <a href="/user/login">로그인</a>
-                <a href="/user/sign">회원가입</a>
-            </span>
-        </div>
-
     </header>
 </body>
 </html>

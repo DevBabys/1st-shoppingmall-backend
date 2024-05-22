@@ -39,17 +39,4 @@ class JwtService(
 
         return AuthenticationResponse(jwt)
     }
-
-    fun test(authorizationHeader: String): String {
-        val jwt = authorizationHeader.substring(7)
-        var email = jwtUtil.extractedEmail(jwt)
-        if (jwtUtil.validateToken(jwt, userDetailsService.loadUserByUsername(email).toString()) ) {
-
-            // 처리 로직 작성
-            return "Post request processed successfully"
-        }
-        else {
-            throw RuntimeException("Invalid JWT Token")
-        }
-    }
 }

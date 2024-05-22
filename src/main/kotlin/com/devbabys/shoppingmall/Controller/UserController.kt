@@ -4,6 +4,7 @@ import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.JwtService
 import com.devbabys.shoppingmall.Service.UserService
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.coyote.Response
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,8 +18,6 @@ import java.security.MessageDigest
 class UserController(
     @Autowired
     private val userService: UserService,
-    @Autowired
-    private val jwtService: JwtService,
     @Autowired
     private val jwtUtil: JwtUtil
 ) {
@@ -51,6 +50,21 @@ class UserController(
         var authenticationRequest = AuthenticationRequest(email, password)
         var result = userService.login(authenticationRequest, response)
 
+        model.addAttribute("result", result)
+
+        return if (result) {
+            "redirect:/"
+        } else {
+            "user/login"
+        }
+    }
+
+    // 로그아웃
+    @GetMapping("user/logout")
+    fun getLogout(model: Model,
+                  response: HttpServletResponse
+    ): String {
+        var result = userService.logout(response)
         model.addAttribute("result", result)
 
         return if (result) {

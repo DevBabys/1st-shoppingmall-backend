@@ -1,9 +1,11 @@
 package com.devbabys.shoppingmall.Service
 
 import com.devbabys.shoppingmall.Controller.CookieController
+import com.devbabys.shoppingmall.Cookie.CookieUtil
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.Model.User
 import com.devbabys.shoppingmall.Repository.UserRepo
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -18,10 +20,8 @@ class UserService(
     @Autowired
     private val jwtService: JwtService,
     @Autowired
-    private val cookieController: CookieController
+    private val cookieUtil: CookieUtil
 ) {
-//    @Autowired
-//    lateinit var repo: UserRepo
 
     fun sign(email: String, password: String, userName: String): Boolean {
         try {
@@ -50,7 +50,7 @@ class UserService(
             if (result) {
                 var auth = jwtService.createAuthenticationToken(authenticationRequest, response)
 
-                cookieController.setToken(response, "token", auth.token)
+                cookieUtil.setToken(response, "token", auth.token)
             }
             print("login result : $result")
             return result
@@ -59,5 +59,10 @@ class UserService(
             print("user not exists")
             return false
         }
+    }
+
+    fun logout(response: HttpServletResponse): Boolean {
+        cookieUtil.delToken(response, "token")
+        return true
     }
 }
