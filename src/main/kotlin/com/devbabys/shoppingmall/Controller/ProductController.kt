@@ -15,6 +15,11 @@ class ProductController(
     @Autowired private val jwtUtil: JwtUtil
 ) {
 
+    @GetMapping("product/list")
+    fun getProduct(model: Model) : String {
+        return "product/product_list"
+    }
+
     @GetMapping("product/{num}")
     @ResponseBody
     fun product(model: Model, @PathVariable num : Int) : String {

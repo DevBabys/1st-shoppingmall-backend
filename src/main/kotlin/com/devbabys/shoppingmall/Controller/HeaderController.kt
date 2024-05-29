@@ -12,9 +12,15 @@ class HeaderController {
         return "user/login"
     }
 
-    @GetMapping("user/sign")
+    @GetMapping("user/register")
     fun getSign(model: Model): String {
-        model.addAttribute("title", "sign")
-        return "user/sign"
+        model.addAttribute("title", "register")
+        return "user/register"
+    }
+
+    @GetMapping("user/cart")
+    fun getCart(model: Model): String {
+        model.addAttribute("title", "cart")
+        return "user/cart"
     }
 }

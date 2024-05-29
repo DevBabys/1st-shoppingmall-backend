@@ -27,9 +27,13 @@ class SecurityConfig(
     fun passwordEncoder() = BCryptPasswordEncoder(10)
 
     private val allowedUrls = arrayOf("/",
-        "/user/sign", "/user/login", "user/logout",
-        "/cookie/getCookie", "/cookie/setCookie",
-        "/product/create"
+        "/css/**", "/js/**", "/images/**", // 정적 자원에 대한 접근 허용
+        "/user/register", "/user/login", "user/logout", // 로그인 관련
+        "/cookie/getCookie", "/cookie/setCookie", // JWT 쿠키 관련
+
+        "/product/list", // 상품 페이지 관련
+        "/product/create",
+        "/user/cart"
     )
 
     @Bean
@@ -41,7 +45,4 @@ class SecurityConfig(
         }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }	// 세션 미사용
         .build()
-
-
-
 }

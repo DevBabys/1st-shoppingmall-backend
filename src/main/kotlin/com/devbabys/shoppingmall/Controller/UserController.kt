@@ -23,11 +23,11 @@ class UserController(
 ) {
 
     // 회원가입
-    @PostMapping("user/sign")
+    @PostMapping("user/register")
     fun postSign(model: Model,
                  @RequestParam(value="email") email: String,
                  @RequestParam(value="password") password: String,
-                 @RequestParam(value="userName") userName: String
+                 @RequestParam(value="username") userName: String
     ): String {
         var result = userService.sign(email, password, userName)
 
@@ -36,7 +36,7 @@ class UserController(
         return if (result) {
             "redirect:/"
         } else {
-            "user/sign"
+            "user/register"
         }
     }
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- 헤더 포함 -->
+<div th:replace="~{header :: header}"></div>
+
+<main>
+    <section class="hero">
+        <h2>Discover Our Latest Collection</h2>
+        <button>Shop Now</button>
+    </section>
+
+    <!-- Image Slider -->
+    <section class="slider">
+        <div class="slides">
+            <img src="product1.jpg" alt="Product 1">
+            <img src="product2.jpg" alt="Product 2">
+            <img src="product3.jpg" alt="Product 3">
+        </div>
+    </section>
+
+    <section class="featured-products">
+        <h2>Featured Products</h2>
+        <div class="product-list">
+            <div class="product">
+                <img src="product1.jpg" alt="Product 1">
+                <h3>Product 1</h3>
+                <p>$19.99</p>
+            </div>
+            <div class="product">
+                <img src="product2.jpg" alt="Product 2">
+                <h3>Product 2</h3>
+                <p>$29.99</p>
+            </div>
+            <div class="product">
+                <img src="product3.jpg" alt="Product 3">
+                <h3>Product 3</h3>
+                <p>$39.99</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+<!-- 푸터 포함 -->
+<div th:replace="~{footer :: footer}"></div>
+
+<script src="scripts.js"></script>
+</body>
+</html>
