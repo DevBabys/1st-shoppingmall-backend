@@ -27,14 +27,14 @@ class ProductController(
         return "ok"
     }
 
-    @PostMapping("product/create")
-    @ResponseBody
-    fun createPost(
-        @RequestHeader("Authorization") authorizationHeader: String,
-        @RequestBody productRequest: ProductRequest
-    ): Product {
-        val token = authorizationHeader.substring(7) // "Bearer " 부분 제거
-        val userId = jwtUtil.extractedUserId(token)
-        return productService.createProduct(userId, productRequest.title, productRequest.content)
-    }
+//    @PostMapping("product/create")
+//    @ResponseBody
+//    fun createPost(
+//        @RequestHeader("Authorization") authorizationHeader: String,
+//        @RequestBody productRequest: ProductRequest
+//    ): Product {
+//        val token = authorizationHeader.substring(7) // "Bearer " 부분 제거
+//        val userId = jwtUtil.extractedUserId(token)
+//        return productService.createProduct(userId, productRequest.title, productRequest.content)
+//    }
 }

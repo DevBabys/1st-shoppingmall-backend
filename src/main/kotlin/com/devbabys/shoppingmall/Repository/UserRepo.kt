@@ -10,5 +10,5 @@ interface UserRepo: JpaRepository<User, Long> {
     @Nullable
     fun findByEmail(email: String): User
     @Nullable
-    fun findByUserName(userName: String): User
+    fun findByUsername(username: String): User
 }

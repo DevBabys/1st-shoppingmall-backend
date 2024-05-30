@@ -30,7 +30,7 @@ class JwtUtil {
     fun extractedUserId(token: String): Long? {
         lateinit var userRepo: UserRepo
         val email: String = extractAllClaims(token).payload.subject
-        return userRepo.findByEmail(email).id
+        return userRepo.findByEmail(email).userId
     }
 
     fun isTokenExpired(token: String): Boolean {

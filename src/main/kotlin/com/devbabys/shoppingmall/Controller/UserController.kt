@@ -27,9 +27,9 @@ class UserController(
     fun postSign(model: Model,
                  @RequestParam(value="email") email: String,
                  @RequestParam(value="password") password: String,
-                 @RequestParam(value="username") userName: String
+                 @RequestParam(value="username") username: String
     ): String {
-        var result = userService.sign(email, password, userName)
+        var result = userService.sign(email, password, username)
 
         model.addAttribute(("result"), result) // 템플릿에 회원가입 유무 전달
 

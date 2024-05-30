@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProductRepo: JpaRepository<Product, Long> {
-    @Nullable
-    fun findByUserId(userId: Long): Product
+//    @Nullable
+//    fun findByUserId(userId: Long): Product
 }

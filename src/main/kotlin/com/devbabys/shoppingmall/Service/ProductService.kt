@@ -13,8 +13,8 @@ class ProductService(
     @Autowired private val userRepo: UserRepo
 ) {
 
-    fun createProduct(userId: Long?, title: String, content: String): Product {
-        var post = Product(userId = userId, title = title, content = content)
-        return productRepo.save(post)
-    }
+//    fun createProduct(userId: Long?, title: String, content: String): Product {
+//        var post = Product(userId = userId, title = title, content = content)
+//        return productRepo.save(post)
+//    }
 }

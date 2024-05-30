@@ -1,11 +1,9 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.Controller.CookieController
 import com.devbabys.shoppingmall.Cookie.CookieUtil
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.Model.User
 import com.devbabys.shoppingmall.Repository.UserRepo
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -23,7 +21,7 @@ class UserService(
     private val cookieUtil: CookieUtil
 ) {
 
-    fun sign(email: String, password: String, userName: String): Boolean {
+    fun sign(email: String, password: String, username: String): Boolean {
         try {
             // 이메일 중복 확인
             if (userRepo.findByEmail(email) != null) {
@@ -32,7 +30,7 @@ class UserService(
             // 회원가입 기능 수행
             else {
                 val hashedPassword = passwordEncoder.encode(password)
-                val user = User(email = email, password = hashedPassword, userName = userName)
+                val user = User(email = email, password = hashedPassword, username = username)
                 userRepo.save(user)
                 return true
             }
