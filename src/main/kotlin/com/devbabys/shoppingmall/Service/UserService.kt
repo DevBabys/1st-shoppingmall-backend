@@ -1,10 +1,8 @@
 package com.devbabys.shoppingmall.Service
 
 import com.devbabys.shoppingmall.Cookie.CookieUtil
-import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.Model.User
 import com.devbabys.shoppingmall.Repository.UserRepo
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -21,46 +19,46 @@ class UserService(
     private val cookieUtil: CookieUtil
 ) {
 
-    fun sign(email: String, password: String, username: String): Boolean {
+    fun register(email: String, password: String, username: String): Pair<String, String> {
         try {
             // 이메일 중복 확인
             if (userRepo.findByEmail(email) != null) {
-                return false
+                return "failed" to "email already exisist"
             }
             // 회원가입 기능 수행
             else {
                 val hashedPassword = passwordEncoder.encode(password)
                 val user = User(email = email, password = hashedPassword, username = username)
                 userRepo.save(user)
-                return true
+                return "ok" to "success"
             }
         } catch (e: Exception) {
             println("Controller : UserController : sign : [Catch Error] $e")
-            return false
+            return "failed" to "error"
         }
     }
 
-    fun login(authenticationRequest: AuthenticationRequest, response: HttpServletResponse): Boolean {
-        val user = userRepo.findByEmail(authenticationRequest.email)
-        if (user != null) {
-            var result = passwordEncoder.matches(authenticationRequest.password, user.password)
+//    fun login(authenticationRequest: AuthenticationRequest): Pair<String, String> {
+//        val user = userRepo.findByEmail(authenticationRequest.email)
+//        if (user != null) {
+//            var result = passwordEncoder.matches(authenticationRequest.password, user.password)
+//
+//            if (result) {
+//                var auth = jwtService.createAuthenticationToken(authenticationRequest)
+//
+//                cookieUtil.setToken(response, "token", auth.token)
+//            }
+//            print("login result : $result")
+//            return result
+//        }
+//        else {
+//            print("user not exists")
+//            return false
+//        }
+//    }
 
-            if (result) {
-                var auth = jwtService.createAuthenticationToken(authenticationRequest, response)
-
-                cookieUtil.setToken(response, "token", auth.token)
-            }
-            print("login result : $result")
-            return result
-        }
-        else {
-            print("user not exists")
-            return false
-        }
-    }
-
-    fun logout(response: HttpServletResponse): Boolean {
-        cookieUtil.delToken(response, "token")
-        return true
-    }
+//    fun logout(response: HttpServletResponse): Boolean {
+//        cookieUtil.delToken(response, "token")
+//        return true
+//    }
 }

@@ -8,7 +8,7 @@ import lombok.Setter
 @Setter
 @Entity
 @Table(name = "product_images")
-class ProductImage (
+data class ProductImage (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var imageId : Long = 0, // 이미지 식별 ID

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- 헤더 포함 -->
+<div th:replace="~{header :: header}"></div>
+
+<!-- 내용 -->
+<main>
+    <section class="checkout-form">
+        <h2>Billing Details</h2>
+        <form id="checkout-form">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="zip">Zip Code:</label>
+                <input type="text" id="zip" name="zip" required>
+            </div>
+            <div class="form-group">
+                <label for="card">Credit Card Number:</label>
+                <input type="text" id="card" name="card" required>
+            </div>
+            <div class="form-group">
+                <label for="expiration">Expiration Date:</label>
+                <input type="text" id="expiration" name="expiration" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv" required>
+            </div>
+            <button type="submit">Place Order</button>
+        </form>
+    </section>
+    <section class="order-summary">
+        <h2>Order Summary</h2>
+        <p>Item 1: $19.99</p>
+        <p>Item 2: $29.99</p>
+        <p>Total: $49.98</p>
+    </section>
+</main>
+
+<!-- 푸터 포함 -->
+<div th:replace="~{footer :: footer}"></div>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

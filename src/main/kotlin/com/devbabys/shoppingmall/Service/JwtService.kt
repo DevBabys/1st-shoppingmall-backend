@@ -23,7 +23,7 @@ class JwtService(
     private val userDetailsService: CustomUserDetailsService
 ) {
 
-    fun createAuthenticationToken(authenticationRequest: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponse {
+    fun createAuthenticationToken(authenticationRequest: AuthenticationRequest): AuthenticationResponse {
         try {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(authenticationRequest.email, authenticationRequest.password)
@@ -35,8 +35,8 @@ class JwtService(
         }
 
         val userDetails: UserDetails = userDetailsService.loadUserByUsername(authenticationRequest.email)
-        val jwt: String = jwtUtil.generateToken(userDetails.username)
+        val token: String = jwtUtil.generateToken(userDetails.username)
 
-        return AuthenticationResponse(jwt)
+        return AuthenticationResponse(token)
     }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Setter
 @Entity
 @Table(name = "product_reviews")
-class ProductReviews (
+data class ProductReviews (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var reviewId : Long = 0, // 리뷰 식별 ID
@@ -18,7 +18,7 @@ class ProductReviews (
     @JoinColumn(name = "product_id")
     var productId : Product, // 참조되는 상품 ID
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     var userId: User, // 참조되는 유저 ID
 
@@ -27,6 +27,9 @@ class ProductReviews (
 
     @Column(columnDefinition = "TEXT")
     var comment: String? = null, // 리뷰 내용
+
+    @Column(nullable = false)
+    var likes: Int, // 좋아요 수
 
     @Column(nullable = false, updatable = false)
     var createAt: LocalDateTime = LocalDateTime.now()

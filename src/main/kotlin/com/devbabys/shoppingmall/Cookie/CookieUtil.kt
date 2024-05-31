@@ -21,17 +21,16 @@ class CookieUtil {
         return null
     }
 
-    fun setToken(response: HttpServletResponse,
-                 cookieName: String,
-                 cookieValue: String): Boolean {
-        val cookie = Cookie(cookieName, cookieValue)
-        cookie.isHttpOnly = true
-        cookie.path = "/" // 쿠키 적용 URL 범위 지정
-        cookie.maxAge = 7 * 24 * 60 * 60 // 유효기간 1주일
-        response.addCookie(cookie)
-        println("########## CookieController : setToken : [cookieName:cookieValue] ${cookie.name} : ${cookie.value} ##########")
-        return true
-    }
+//    fun setToken(cookieName: String,
+//                 cookieValue: String): Boolean {
+//        val cookie = Cookie(cookieName, cookieValue)
+//        cookie.isHttpOnly = true
+//        cookie.path = "/" // 쿠키 적용 URL 범위 지정
+//        cookie.maxAge = 7 * 24 * 60 * 60 // 유효기간 1주일
+//        response.addCookie(cookie)
+//        println("########## CookieController : setToken : [cookieName:cookieValue] ${cookie.name} : ${cookie.value} ##########")
+//        return true
+//    }
 
     fun delToken(response: HttpServletResponse, cookieName:String): Boolean {
         val cookie = Cookie(cookieName, "")

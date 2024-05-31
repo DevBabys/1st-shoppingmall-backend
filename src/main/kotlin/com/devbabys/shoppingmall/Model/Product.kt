@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Setter
 @Entity
 @Table(name = "products")
-class Product (
+data class Product (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var productId : Long = 0, // 상품 식별 ID

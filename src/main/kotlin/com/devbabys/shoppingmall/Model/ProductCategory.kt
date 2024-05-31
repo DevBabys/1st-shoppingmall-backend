@@ -7,8 +7,8 @@ import lombok.Setter
 @Getter
 @Setter
 @Entity
-@Table(name = "categories")
-class ProductCategory (
+@Table(name = "product_categories")
+data class ProductCategory (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val categoryId: Long = 0,

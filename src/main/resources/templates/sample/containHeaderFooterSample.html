@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/rest_api.js}"></script>
+    <script>
+        window.onload = function() {
+
+            alert(hello());
+        }
+
+    </script>
 </head>
 <body>
     <!-- 헤더 포함 -->
@@ -16,6 +24,6 @@
     <!-- 푸터 포함 -->
     <div th:replace="~{footer :: footer}"></div>
 
-    <script src="scripts.js"></script>
+    <script th:src="@{/js/scripts.js}"></script>
 </body>
 </html>

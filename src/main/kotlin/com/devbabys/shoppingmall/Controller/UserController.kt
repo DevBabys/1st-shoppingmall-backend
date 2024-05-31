@@ -1,20 +1,16 @@
 package com.devbabys.shoppingmall.Controller
 
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
+import com.devbabys.shoppingmall.DTO.UserRegisterRequest
 import com.devbabys.shoppingmall.Security.JwtUtil
-import com.devbabys.shoppingmall.Service.JwtService
 import com.devbabys.shoppingmall.Service.UserService
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.apache.coyote.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import java.security.MessageDigest
 
-@Controller
+@RestController
 class UserController(
     @Autowired
     private val userService: UserService,
@@ -24,55 +20,39 @@ class UserController(
 
     // 회원가입
     @PostMapping("user/register")
-    fun postSign(model: Model,
-                 @RequestParam(value="email") email: String,
-                 @RequestParam(value="password") password: String,
-                 @RequestParam(value="username") username: String
-    ): String {
-        var result = userService.sign(email, password, username)
-
-        model.addAttribute(("result"), result) // 템플릿에 회원가입 유무 전달
-
-        return if (result) {
-            "redirect:/"
-        } else {
-            "user/register"
-        }
+    fun postRegister(@RequestBody request: UserRegisterRequest): ResponseEntity<Map<String, String>> {
+        var (response, description) = userService.register(request.email, request.password, request.username)
+        var result = mapOf("result" to response, "description" to description)
+        return ResponseEntity.ok(result)
     }
 
     // 로그인
     @PostMapping("user/login")
-    fun postLogin(model: Model,
-                  @RequestParam(value="email") email: String,
-                  @RequestParam(value="password") password: String,
-                  response: HttpServletResponse
-    ): String {
-        var authenticationRequest = AuthenticationRequest(email, password)
-        var result = userService.login(authenticationRequest, response)
-
-        model.addAttribute("result", result)
-
-        return if (result) {
-            "redirect:/"
-        } else {
-            "user/login"
-        }
+    fun postLogin(@RequestBody request: AuthenticationRequest): ResponseEntity<Map<String, String>> {
+        //var result = userService.login(request)
+        var result = mapOf("result" to "test", "description" to "test")
+        return ResponseEntity.ok(result)
+//        return if (result) {
+//            "redirect:/"
+//        } else {
+//            "user/login"
+//        }
     }
 
-    // 로그아웃
-    @GetMapping("user/logout")
-    fun getLogout(model: Model,
-                  response: HttpServletResponse
-    ): String {
-        var result = userService.logout(response)
-        model.addAttribute("result", result)
-
-        return if (result) {
-            "redirect:/"
-        } else {
-            "user/login"
-        }
-    }
+//    // 로그아웃
+//    @GetMapping("user/logout")
+//    fun getLogout(model: Model,
+//                  response: HttpServletResponse
+//    ): String {
+//        var result = userService.logout(response)
+//        model.addAttribute("result", result)
+//
+//        return if (result) {
+//            "redirect:/"
+//        } else {
+//            "user/login"
+//        }
+//    }
 
     @GetMapping("user/test")
     @ResponseBody
