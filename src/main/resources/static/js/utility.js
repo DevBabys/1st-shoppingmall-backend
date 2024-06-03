@@ -1,4 +1,4 @@
-var apiBaseUrl = 'http://localhost:8888'
+var apiBaseUrl = 'http://localhost:8888/'
 
 // API 처리 함수
 function restApi(httpMethod, data, url, token="") {

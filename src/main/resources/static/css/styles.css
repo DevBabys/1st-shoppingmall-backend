@@ -86,7 +86,7 @@ header .branding img {
     text-align: center;
 }
 
-.auth-form form {
+.auth-form div {
     display: flex;
     flex-direction: column;
 }

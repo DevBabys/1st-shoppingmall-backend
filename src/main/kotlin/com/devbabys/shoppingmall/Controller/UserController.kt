@@ -4,10 +4,8 @@ import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.DTO.UserRegisterRequest
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.UserService
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -21,8 +19,9 @@ class UserController(
     // 회원가입
     @PostMapping("user/register")
     fun postRegister(@RequestBody request: UserRegisterRequest): ResponseEntity<Map<String, String>> {
-        var (response, description) = userService.register(request.email, request.password, request.username)
-        var result = mapOf("result" to response, "description" to description)
+        var (response, description, value) = userService.register(request.email, request.password, request.username)
+        var result = mapOf("result" to response, "description" to description, "value" to value)
+
         return ResponseEntity.ok(result)
     }
 

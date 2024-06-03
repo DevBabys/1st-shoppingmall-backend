@@ -5,31 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}"></title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/utility.js}"></script>
+    <script th:src="@{/js/user.js}"></script>
 </head>
 <body>
     <!-- 헤더 포함 -->
     <div th:replace="~{header :: header}"></div>
 
-    <!-- 내용 -->
-<!--    <h1>Sign</h1>-->
-<!--    <form action="/user/sign" method="post">-->
-<!--        email:<br/>-->
-<!--        <input name="email" type="text" placeholder="이메일 주소"/><br/>-->
-<!--        password:<br/>-->
-<!--        <input name="password" type="password" placeholder="비밀번호"/><br/>-->
-<!--        userName:<br/>-->
-<!--        <input name="userName" type="text" placeholder="이름"/><br/>-->
-<!--        <input type="submit" value="회원가입">-->
-
-<!--        <div th:if="${result == false}">-->
-<!--            <span>회원가입에 실패했습니다.</span>-->
-<!--        </div>-->
-<!--    </form>-->
-
     <main>
         <section class="auth-form">
             <h2>Create a New Account</h2>
-            <form id="register-form" action="/user/register" method="post">
+            <div id="register-form">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
                 <label for="email">Email:</label>
@@ -38,8 +24,8 @@
                 <input type="password" id="password" name="password" required>
                 <label for="confirm-password">Confirm Password:</label>
                 <input type="password" id="confirm-password" name="confirm-password" required>
-                <button type="submit">Register</button>
-            </form>
+                <button id="registerButton">Register</button>
+            </div>
             <div th:if="${result == false}">
                 <span>회원가입에 실패했습니다.</span>
             </div>
@@ -48,7 +34,5 @@
 
     <!-- 푸터 포함 -->
     <div th:replace="~{footer :: footer}"></div>
-
-    <script th:src="@{/js/scripts.js}"></script>
 </body>
 </html>
