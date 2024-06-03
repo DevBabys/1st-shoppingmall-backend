@@ -6,6 +6,18 @@
 * Port Number : 8888
 * Branch : 은별 - eunbyeol
 
+### Reference
+* GitHub
+>https://github.com/DevBabys
+* PPT
+> https://docs.google.com/presentation/d/1k21m5FauVM9W0OejN_bLNB3oxGLDfavWBdHiqaCZ_NE/edit#slide=id.p
+* API 기능 명세서   
+> https://docs.google.com/spreadsheets/d/1bSlyo5-Lb6NDKC9yH98G6WUEhLEeJteOSwbB86eL2vc/edit#gid=0
+* 데이터베이스 테이블 설계서 (ERD)
+> https://docs.google.com/document/d/1tydQcgZFXc3Rx_fnkfzR2DHmZTuw1eFjfNSMJKOgbQI/edit
+* Notion
+> https://www.notion.so/ShoppingMall-ERD-42cc7fb576274bffbd351d9d241e7c8b
+
 # 작업 히스토리
 ### 회원가입
 * 2024-05-31 : API 형식의 회원가입 기능 구현
