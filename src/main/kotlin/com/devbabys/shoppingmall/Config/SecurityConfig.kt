@@ -29,11 +29,10 @@ class SecurityConfig(
     private val allowedUrls = arrayOf("/",
         "/css/**", "/js/**", "/images/**", // 정적 자원에 대한 접근 허용
         "/user/register", "/user/login", "user/logout", // 로그인 관련
-        "/cookie/getCookie", "/cookie/setCookie", // JWT 쿠키 관련
-
+        "/user/userinfo", "/user/cart",  // 회원 관련
         "/product/list", // 상품 페이지 관련
-        "/product/create",
-        "/user/cart"
+        "/product/create"
+
     )
 
     @Bean

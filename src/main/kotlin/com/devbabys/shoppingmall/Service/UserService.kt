@@ -1,8 +1,10 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.Cookie.CookieUtil
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
+import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.UserRegisterRequest
 import com.devbabys.shoppingmall.Model.User
+import com.devbabys.shoppingmall.Repository.UserInfoRepo
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -15,27 +17,27 @@ class UserService(
     @Autowired
     private val userRepo: UserRepo,
     @Autowired
-    private val jwtService: JwtService,
+    private val userInfoRepo: UserInfoRepo,
     @Autowired
-    private val cookieUtil: CookieUtil
+    private val jwtService: JwtService
 ) {
 
-    fun register(email: String, password: String, username: String): Triple<String, String, String> {
+    fun register(request: UserRegisterRequest): Triple<String, String, String> {
         try {
             // 이메일 중복 확인
-            if (userRepo.findByEmail(email) != null) {
-                return Triple("fail", "register", "email already exist")
+            if (userRepo.findByEmail(request.email) != null) {
+                return Triple("fail", "registerUser", "email already exist")
             }
             // 회원가입 기능 수행
             else {
-                val hashedPassword = passwordEncoder.encode(password)
-                val user = User(email = email, password = hashedPassword, username = username)
+                val hashedPassword = passwordEncoder.encode(request.password)
+                val user = User(email = request.email, password = hashedPassword, username = request.username)
                 userRepo.save(user)
-                return Triple("success", "register", "")
+                return Triple("success", "registerUser", "")
             }
         } catch (e: Exception) {
-            println("Controller : UserController : register : [Catch Error] $e")
-            return Triple("fail", "register", "program error")
+            println("Controller : UserController : registerUser : [Catch Error] $e")
+            return Triple("fail", "registerUser", "program error")
         }
     }
 
@@ -61,8 +63,39 @@ class UserService(
         }
     }
 
-//    fun logout(response: HttpServletResponse): Boolean {
-//        cookieUtil.delToken(response, "token")
-//        return true
-//    }
+    fun logout(authenticationResponse: AuthenticationResponse): Triple<String, String, String> {
+        try {
+            var response = jwtService.refreshToken(authenticationResponse)
+            return Triple("success", "logout", "")
+        } catch (e: Exception) {
+            println("Controller : UserController : logout : [Catch Error] $e")
+            return Triple("fail", "logout", "program error")
+        }
+    }
+
+    fun userinfo(authenticationResponse: AuthenticationResponse): Triple<String, String, Any> {
+        try {
+            var response = jwtService.validateToken(authenticationResponse) // return value : email
+
+            var user = userRepo.findByEmail(response)
+            var userinfo = userInfoRepo.findByUserId(user)
+
+            if (user != null && userinfo == null) {
+                var result = mapOf("email" to user.email, "username" to user.username)
+                return Triple("success", "userinfo", result)
+            } else if (user != null && userinfo != null) {
+                var result = mapOf("email" to user.email, "username" to user.username, "phoneNumber" to userinfo.phoneNumber,
+                    "zipcode" to userinfo.zipCode, "address" to userinfo.address, "detailAddress" to userinfo.detailAddress)
+                return Triple("success", "userinfo", result)
+            } else {
+                return Triple("fail", "userinfo", "invalid user")
+            }
+
+        } catch (e: Exception) {
+            println("Controller : UserController : getUserInfo : [Catch Error] $e")
+            var result = mapOf("class" to "program error", "message" to e)
+
+            return Triple("fail", "getUserInfo", "program error")
+        }
+    }
 }

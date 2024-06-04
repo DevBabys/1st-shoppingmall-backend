@@ -3,8 +3,6 @@ package com.devbabys.shoppingmall.Service
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.DTO.AuthenticationResponse
 import com.devbabys.shoppingmall.Security.JwtUtil
-import jakarta.servlet.http.Cookie
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
@@ -38,5 +36,23 @@ class JwtService(
         val token: String = jwtUtil.generateToken(userDetails.username)
 
         return AuthenticationResponse(token)
+    }
+
+    fun refreshToken(authenticationResponse: AuthenticationResponse) {
+        try {
+            var email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
+            jwtUtil.generateToken(email)
+        } catch (e: Exception) {
+            throw RuntimeException("EXPIRE_TOKEN_EXCEPTION", e)
+        }
+    }
+
+    fun validateToken(authenticationResponse: AuthenticationResponse): String {
+        try {
+            var email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
+            return email
+        } catch (e: Exception) {
+            throw RuntimeException("EXPIRE_TOKEN_EXCEPTION", e)
+        }
     }
 }
