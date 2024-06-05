@@ -8,7 +8,7 @@
 
 ### Reference
 * Frontend (React Project)
-> Github : https://github.com/DevBabys/-devbabys-1st-project-shoppingmall-backend-springboot-kotlin  
+> Github : https://github.com/yek-j/shopping-front-app  
 > HOST : https://shopping-front-app.vercel.app/login
 * GitHub
 >https://github.com/DevBabys
