@@ -9,7 +9,7 @@
 ### Reference
 * Frontend (React Project)
 > Github : https://github.com/yek-j/shopping-front-app  
-> HOST : https://shopping-front-app.vercel.app/login
+> HOST : https://shopping-front-app.vercel.app
 * GitHub
 >https://github.com/DevBabys
 * PPT
