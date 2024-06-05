@@ -1,4 +1,4 @@
-# 코틀린 스프링부트 테스트
+# 코틀린 스프링부트 개발 환경
 ### *Use Env*
 * Java Version : 21
 * Gradle 8.5
@@ -7,6 +7,9 @@
 * Branch : 은별 - eunbyeol
 
 ### Reference
+* Frontend (React Project)
+> Github : https://github.com/DevBabys/-devbabys-1st-project-shoppingmall-backend-springboot-kotlin
+> HOST : https://shopping-front-app.vercel.app/login
 * GitHub
 >https://github.com/DevBabys
 * PPT
