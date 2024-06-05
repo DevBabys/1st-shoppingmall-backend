@@ -10,7 +10,7 @@
 * Frontend (React Project)
 > Github : https://github.com/yek-j/shopping-front-app  
 > HOST : https://shopping-front-app.vercel.app
-* GitHub
+* DevBabys Team GitHub
 >https://github.com/DevBabys
 * PPT
 > https://docs.google.com/presentation/d/1k21m5FauVM9W0OejN_bLNB3oxGLDfavWBdHiqaCZ_NE/edit#slide=id.p
