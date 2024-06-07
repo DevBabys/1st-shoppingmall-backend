@@ -3,7 +3,7 @@
 * Java Version : 21
 * Gradle 8.5
 * Spring Boot 3.2.5
-* Port Number : 8888
+* Port Number : 4001
 * Branch : 은별 - eunbyeol
 
 ### Reference
