@@ -66,7 +66,11 @@ class UserService(
     fun logout(authenticationResponse: AuthenticationResponse): Triple<String, String, String> {
         try {
             var response = jwtService.refreshToken(authenticationResponse)
-            return Triple("success", "logout", "")
+            return if (response) {
+                return Triple("success", "logout", "")
+            } else {
+                return Triple("fail", "logout", "invalid token")
+            }
         } catch (e: Exception) {
             println("Controller : UserController : logout : [Catch Error] $e")
             return Triple("fail", "logout", "program error")

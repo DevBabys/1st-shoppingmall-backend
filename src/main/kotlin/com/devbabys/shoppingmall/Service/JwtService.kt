@@ -38,10 +38,16 @@ class JwtService(
         return AuthenticationResponse(token)
     }
 
-    fun refreshToken(authenticationResponse: AuthenticationResponse) {
+    fun refreshToken(authenticationResponse: AuthenticationResponse): Boolean {
         try {
-            var email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
-            jwtUtil.generateToken(email)
+            val email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
+
+            if (jwtUtil.validateToken(authenticationResponse.token, email)) {
+                jwtUtil.generateToken(email)
+                return true
+            } else {
+                return false
+            }
         } catch (e: Exception) {
             throw RuntimeException("EXPIRE_TOKEN_EXCEPTION", e)
         }
