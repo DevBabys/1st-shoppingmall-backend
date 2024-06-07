@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class WebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4001")  // 허용할 출처를 지정
+            .allowedOrigins("http://58.238.170.182:4001")  // 허용할 출처를 지정
             .allowedMethods("GET", "POST", "PUT", "DELETE")
     }
 }
