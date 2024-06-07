@@ -46,6 +46,5 @@ class JwtRequestFilter(
         } catch (e: Exception) {
             println("########## JwtRequestFilter : doFilterInternal : [Catch Error] $e ##########")
         }
-
     }
 }

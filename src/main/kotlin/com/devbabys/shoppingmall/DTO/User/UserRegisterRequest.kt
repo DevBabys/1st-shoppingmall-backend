@@ -1,6 +1,6 @@
-package com.devbabys.shoppingmall.DTO
+package com.devbabys.shoppingmall.DTO.User
 
-class UserRegisterRequest (
+data class UserRegisterRequest (
     val email: String,
     val password: String,
     val username: String
