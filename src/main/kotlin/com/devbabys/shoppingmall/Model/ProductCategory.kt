@@ -13,9 +13,9 @@ data class ProductCategory (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val categoryId: Long = 0,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     val name: String,
 
     @Column(columnDefinition = "TEXT")
     val description: String? = null
-)
+) { }

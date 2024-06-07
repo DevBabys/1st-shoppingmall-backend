@@ -50,7 +50,7 @@ class UserController(
     }
 
     // 회원 정보 수정
-    @PutMapping("user/updateuser")
+    @PutMapping("user/update")
     fun updateUserInfo(@RequestHeader("Authorization") authRequest: AuthenticationResponse, @RequestBody userRequest: UserInfoRequest): ResponseEntity<Map<String, String>> {
         val (response, description, value) = userService.updateUser(authRequest, userRequest)
         val result = mapOf("result" to response, "description" to description, "value" to value)
@@ -67,16 +67,25 @@ class UserController(
         return ResponseEntity.ok(result)
     }
 
-    // 비밀번호 찾기1 - 유저를 확인하여 임시 코드 발급
-    @PostMapping("user/finduser")
-    fun findEmail(@RequestBody findUserRequest: FindUserRequest): ResponseEntity<Map<String, String>> {
-        val (response, description, value) = userService.findUser(findUserRequest)
-        val result = mapOf("result" to response, "description" to description, "value" to value)
+//    // 비밀번호 찾기1 - 유저를 확인하여 임시 코드 발급
+//    @PostMapping("user/finduser")
+//    fun findEmail(@RequestBody findUserRequest: FindUserRequest): ResponseEntity<Map<String, String>> {
+//        val (response, description, value) = userService.findUser(findUserRequest)
+//        val result = mapOf("result" to response, "description" to description, "value" to value)
+//
+//        return ResponseEntity.ok(result)
+//    }
+//
+//    // 비밀번호 찾기2 - 임시 코드를 확인하여 비밀번호 재설정
+//    @PostMapping("user/resetpw")
+//    fun resetPassword(@RequestBody findUserResponse: FindUserResponse): ResponseEntity<Map<String, String>> {
+//        val (response, description, value) = userService.resetPassword(findUserResponse)
+//        val result = mapOf("result" to response, "description" to description, "value" to value)
+//
+//        return ResponseEntity.ok(result)
+//    }
 
-        return ResponseEntity.ok(result)
-    }
-
-    // 비밀번호 찾기2 - 임시 코드를 확인하여 비밀번호 재설정
+    // 비밀번호 재설정
     @PostMapping("user/resetpw")
     fun resetPassword(@RequestBody findUserResponse: FindUserResponse): ResponseEntity<Map<String, String>> {
         val (response, description, value) = userService.resetPassword(findUserResponse)
@@ -86,7 +95,7 @@ class UserController(
     }
 
     // 회원 탈퇴
-    @DeleteMapping("user/deluser")
+    @DeleteMapping("user/delete")
     fun deleteUser(@RequestHeader("Authorization") authRequest: AuthenticationResponse): ResponseEntity<Map<String, String>> {
         val (response, description, value) = userService.deleteUser(authRequest)
         val result = mapOf("result" to response, "description" to description, "value" to value)

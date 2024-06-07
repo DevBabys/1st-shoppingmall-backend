@@ -1,24 +1,54 @@
 package com.devbabys.shoppingmall.Controller
 
+import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
+import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
 import com.devbabys.shoppingmall.Model.Product
 import com.devbabys.shoppingmall.Security.JwtUtil
+import com.devbabys.shoppingmall.Service.ImageService
 import com.devbabys.shoppingmall.Service.ProductService
-import com.devbabys.shoppingmall.DTO.ProductRequest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
+import org.springframework.http.ResponseEntity
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 
-@Controller
+@RestController
 class ProductController(
     @Autowired private val productService: ProductService,
+    @Autowired private val imageService: ImageService,
     @Autowired private val jwtUtil: JwtUtil
 ) {
+    @GetMapping("product/category/list")
+    fun getProduct(): ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = productService.getCategoryList()
+        val result = mapOf("result" to response, "description" to description, "value" to value)
 
-    @GetMapping("product/list")
-    fun getProduct(model: Model) : String {
-        return "product/product_list"
+        return ResponseEntity.ok(result)
     }
+
+    @PostMapping("product/category/add")
+    fun addCategory(@RequestBody productCategoryRequest: ProductCategoryRequest): ResponseEntity<Map<String, String>> {
+        val (response, description, value) = productService.addCategory(productCategoryRequest)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
+
+    @PutMapping("product/category/update")
+    fun updateCategory(@RequestBody productCategoryRequest: ProductCategoryRequest): ResponseEntity<Map<String, String>> {
+        val (response, description, value) = productService.updateCategory(productCategoryRequest)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("product/category/delete")
+    fun deleteCategory(@RequestBody productCategoryResponse: ProductCategoryResponse): ResponseEntity<Map<String, String>> {
+        val (response, description, value) = productService.deleteCategory(productCategoryResponse)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+        
+        return ResponseEntity.ok(result)
+    }
+
 
     @GetMapping("product/{num}")
     @ResponseBody

@@ -24,9 +24,8 @@ class UserService(
     private val jwtService: JwtService
 ) {
 
-    // 비밀번호 찾기 시, 인증 코드
-    private val passwordRessetCodes = ConcurrentHashMap<String, HashMap<String, String>>()
-
+    // 비밀번호 찾기 시, 인증 코드 : 로직 생략되었으므로 비활성화
+    // private val passwordRessetCodes = ConcurrentHashMap<String, HashMap<String, String>>()
 
     fun register(request: UserRegisterRequest): Triple<String, String, String> {
         try {
@@ -154,7 +153,7 @@ class UserService(
     }
 
     fun findEmail(findEmailRequest: FindEmailRequest): Triple<String, String, String> {
-        userRepo.findByUsername(findEmailRequest.username).let {
+        userRepo.findByEmail(findEmailRequest.email).let {
             if (it!= null) {
                 return Triple("success", "findEmail", it.email)
             } else {
@@ -163,58 +162,86 @@ class UserService(
         }
     }
 
-    fun findUser(findUserRequest: FindUserRequest): Triple<String, String, String> {
-        userRepo.findByEmail(findUserRequest.email).let {
-            if (it!= null) {
-                if (it.username == findUserRequest.username) {
-                    val passwordResetCode = HashMap<String, String>()
-                    passwordResetCode["email"] = findUserRequest.email
-                    passwordResetCode["code"] = Random.nextLong(100000, 999999).toString()
-                    passwordResetCode["created_at"] = System.currentTimeMillis().toString()
-                    passwordRessetCodes[passwordResetCode["email"].toString()] = passwordResetCode
-                    return Triple("success", "findUser", passwordResetCode["code"].toString())
-                } else {
-                    return Triple("fail", "findUser", "invalid username")
-                }
-            } else {
-                return Triple("fail", "findUser", "invalid email")
-            }
-        }
-    }
+    // 비밀번호 재설정 : 유저를 확인하여 인증코드를 발급하는 함수
+//    fun findUser(findUserRequest: FindUserRequest): Triple<String, String, String> {
+//        userRepo.findByEmail(findUserRequest.email).let {
+//            if (it!= null) {
+//                if (it.username == findUserRequest.username) {
+//                    val passwordResetCode = HashMap<String, String>()
+//                    passwordResetCode["email"] = findUserRequest.email
+//                    passwordResetCode["code"] = Random.nextLong(100000, 999999).toString()
+//                    passwordResetCode["created_at"] = System.currentTimeMillis().toString()
+//                    passwordRessetCodes[passwordResetCode["email"].toString()] = passwordResetCode
+//                    return Triple("success", "findUser", passwordResetCode["code"].toString())
+//                } else {
+//                    return Triple("fail", "findUser", "invalid username")
+//                }
+//            } else {
+//                return Triple("fail", "findUser", "invalid email")
+//            }
+//        }
+//    }
+
+        // 비밀번호 재설정 : 비밀번호 인증번호 확인 로직 추가된 함수
+//    fun resetPassword(findUserResponse: FindUserResponse): Triple<String, String, String> {
+//        try {
+//            val passwordResetCode = passwordRessetCodes[findUserResponse.email]
+//            if (passwordResetCode == null) {
+//                return Triple("fail", "resetPassword", "incorrect email address")
+//            } else {
+//                if (passwordResetCode["code"].toString() != findUserResponse.code) {
+//                    return Triple("fail", "resetPassword", "incorrect code")
+//                } else {
+//                    // to do : 테스트용 유효시간 10초, 실제로는 5분간 유효하도록 변경해야 함.
+//                    val exprieTime = 10 * 1000 // 5 * 60 * 1000
+//                    if (System.currentTimeMillis() - (passwordResetCode["created_at"]!!.toLong()) > exprieTime) {
+//                        return Triple("fail", "resetPassword", "expired code")
+//                    }
+//                    else if (findUserResponse.password == "") {
+//                        return Triple("fail", "resetPassword", "required password")
+//                    }
+//                    else {
+//                        userRepo.findByEmail(findUserResponse.email).let {
+//                            if (it!= null) {
+//                                it.password =  passwordEncoder.encode(findUserResponse.password)
+//                                userRepo.save(it)
+//                                return Triple("success", "resetPassword", "")
+//                            } else {
+//                                return Triple("fail", "resetPassword", "invalid email")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (e: Exception) {
+//            println("Service : UserService : resetPassword : [Catch Error] $e")
+//            return Triple("fail", "resetPassword", "program error")
+//        }
+//    }
 
     fun resetPassword(findUserResponse: FindUserResponse): Triple<String, String, String> {
         try {
-            val passwordResetCode = passwordRessetCodes[findUserResponse.email]
-            if (passwordResetCode == null) {
-                return Triple("fail", "resetPassword", "incorrect email address")
-            } else {
-                if (passwordResetCode["code"].toString() != findUserResponse.code) {
-                    return Triple("fail", "resetPassword", "incorrect code")
-                } else {
-                    // to do : 테스트용 유효시간 10초, 실제로는 5분간 유효하도록 변경해야 함.
-                    val exprieTime = 10 * 1000 // 5 * 60 * 1000
-                    if (System.currentTimeMillis() - (passwordResetCode["created_at"]!!.toLong()) > exprieTime) {
-                        return Triple("fail", "resetPassword", "expired code")
-                    }
-                    else if (findUserResponse.password == "") {
-                        return Triple("fail", "resetPassword", "required password")
-                    }
-                    else {
-                        userRepo.findByEmail(findUserResponse.email).let {
-                            if (it!= null) {
-                                it.password =  passwordEncoder.encode(findUserResponse.password)
-                                userRepo.save(it)
-                                return Triple("success", "resetPassword", "")
-                            } else {
-                                return Triple("fail", "resetPassword", "invalid email")
-                            }
+            // 비밀번호 재설정 임시 코드 로직 생략
+            if (findUserResponse.password == "") {
+                return Triple("fail", "resetPassword", "required password")
+            }
+            else {
+                userRepo.findByEmail(findUserResponse.email).let {
+                    if (it!= null) {
+                        if (it.username != findUserResponse.username) {
+                            return Triple("fail", "resetPassword", "incorrect username")
                         }
+                        it.password = passwordEncoder.encode(findUserResponse.password)
+                        userRepo.save(it)
+                        return Triple("success", "resetPassword", "")
+                    } else {
+                        return Triple("fail", "resetPassword", "program error")
                     }
                 }
             }
         } catch (e: Exception) {
             println("Service : UserService : resetPassword : [Catch Error] $e")
-            return Triple("fail", "resetPassword", "program error")
+            return Triple("fail", "resetPassword", "invalid email")
         }
     }
 
