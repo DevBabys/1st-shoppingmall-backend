@@ -33,7 +33,6 @@ class SecurityConfig(
         "/user/userinfo", "/user/cart",  // 회원 관련
         "/product/list", // 상품 페이지 관련
         "/product/create"
-
     )
 
     @Bean
@@ -45,13 +44,4 @@ class SecurityConfig(
         }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }	// 세션 미사용
         .build()
-
-    @Bean
-    protected fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedOrigins("https://shopping-front-app.vercel.app/login") // 허용할 도메인 설정
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-    }
 }
