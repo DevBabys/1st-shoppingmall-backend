@@ -51,7 +51,7 @@ class UserService(
         try {
             val user = userRepo.findByEmail(authenticationRequest.email)
             if (user != null) {
-                var result = passwordEncoder.matches(authenticationRequest.password, user.password)
+                val result = passwordEncoder.matches(authenticationRequest.password, user.password)
 
                 if (result) {
                     var auth = jwtService.createAuthenticationToken(authenticationRequest)
@@ -71,7 +71,7 @@ class UserService(
 
     fun logout(authenticationResponse: AuthenticationResponse): Triple<String, String, String> {
         try {
-            var response = jwtService.refreshToken(authenticationResponse)
+            val response = jwtService.refreshToken(authenticationResponse)
             return if (response) {
                 return Triple("success", "logout", "")
             } else {
@@ -85,16 +85,16 @@ class UserService(
 
     fun getUser(authenticationResponse: AuthenticationResponse): Triple<String, String, Any> {
         try {
-            var response = jwtService.validateToken(authenticationResponse) // return value : email
+            val response = jwtService.validateToken(authenticationResponse) // return value : email
 
-            var user = userRepo.findByEmail(response)
-            var userinfo = userInfoRepo.findByUserId(user)
+            val user = userRepo.findByEmail(response)
+            val userinfo = userInfoRepo.findByUserId(user)
 
             if (user != null && userinfo == null) {
-                var result = mapOf("email" to user.email, "username" to user.username)
+                val result = mapOf("email" to user.email, "username" to user.username)
                 return Triple("success", "userinfo", result)
             } else if (user != null && userinfo != null) {
-                var result = mapOf("email" to user.email, "username" to user.username, "phoneNumber" to userinfo.phoneNumber,
+                val result = mapOf("email" to user.email, "username" to user.username, "phoneNumber" to userinfo.phoneNumber,
                     "zipcode" to userinfo.zipCode, "address" to userinfo.address, "detailAddress" to userinfo.detailAddress)
                 return Triple("success", "getUser", result)
             } else {
@@ -111,7 +111,7 @@ class UserService(
 
     fun updateUser(authenticationResponse: AuthenticationResponse, userInfoRequest: UserInfoRequest): Triple<String, String, String> {
         try {
-            var response = jwtService.validateToken(authenticationResponse) // return value : email
+            val response = jwtService.validateToken(authenticationResponse) // return value : email
 
             val user = userRepo.findByEmail(response)
             val userInfo = userInfoRepo.findByUserId(user)
@@ -220,9 +220,9 @@ class UserService(
 
     fun deleteUser(authenticationResponse: AuthenticationResponse): Triple<String, String, String> {
         try {
-            var response = jwtService.validateToken(authenticationResponse) // return value : email
+            val response = jwtService.validateToken(authenticationResponse) // return value : email
 
-            var user = userRepo.findByEmail(response)
+            val user = userRepo.findByEmail(response)
 
             if (response == null || user == null) {
                 return Triple("fail", "deleteUser", "invalid token")
