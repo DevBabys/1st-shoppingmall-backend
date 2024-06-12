@@ -38,3 +38,9 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### App Properties ###
+application-dbsettings.properties
+
+### Uploa File Directory ###
+/uploads/
