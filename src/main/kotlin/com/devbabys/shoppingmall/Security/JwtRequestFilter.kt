@@ -1,6 +1,7 @@
 package com.devbabys.shoppingmall.Security
 
 import com.devbabys.shoppingmall.Service.CustomUserDetailsService
+import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
