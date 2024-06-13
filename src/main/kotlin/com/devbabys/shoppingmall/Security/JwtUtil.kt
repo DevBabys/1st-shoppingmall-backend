@@ -1,8 +1,6 @@
 package com.devbabys.shoppingmall.Security
 
 import com.devbabys.shoppingmall.DTO.AuthenticationResponse
-import com.devbabys.shoppingmall.DTO.TokenResponse
-import com.devbabys.shoppingmall.Repository.UserRepo
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts

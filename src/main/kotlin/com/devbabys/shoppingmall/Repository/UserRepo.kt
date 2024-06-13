@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository
 interface UserRepo: JpaRepository<User, Long> {
     @Nullable
     fun findByEmail(email: String): User?
-    @Nullable
-    fun findByUsername(username: String): User
 }
