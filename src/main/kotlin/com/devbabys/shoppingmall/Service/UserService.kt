@@ -52,7 +52,7 @@ class UserService(
                 val result = passwordEncoder.matches(authenticationRequest.password, user.password)
 
                 if (result) {
-                    var auth = jwtService.createAuthenticationToken(authenticationRequest)
+                    val auth = jwtService.createAuthenticationToken(authenticationRequest)
                     return Triple("success", "login", auth.token)
                 } else {
                     return Triple("fail", "login", "wrong password")
@@ -68,9 +68,9 @@ class UserService(
     }
 
     fun logout(authenticationResponse: AuthenticationResponse): Triple<String, String, String> {
-        try {
-            val response = jwtService.refreshToken(authenticationResponse)
-            return if (response) {
+        return try {
+            val response = jwtService.expireToken(authenticationResponse)
+            if (response) {
                 Triple("success", "logout", "")
             } else {
                 Triple("fail", "logout", "invalid token")
@@ -86,7 +86,7 @@ class UserService(
             val response = jwtService.validateToken(authenticationResponse) // return value : email
 
             val user = userRepo.findByEmail(response)
-            val userinfo = userInfoRepo.findByUserId(user)
+            val userinfo = user?.let { userInfoRepo.findByUserId(it) }
 
             if (user != null && userinfo == null) {
                 val result = mapOf("email" to user.email, "username" to user.username)
@@ -109,35 +109,31 @@ class UserService(
         try {
             val response = jwtService.validateToken(authenticationResponse) // return value : email
 
-            val user = userRepo.findByEmail(response)
-            val userInfo = userInfoRepo.findByUserId(user)
+            val user = userRepo.findByEmail(response) ?: return Triple("fail", "updateUser", "invalid user")
+
+            var userInfo = userInfoRepo.findByUserId(user)
 
             if (userInfoRequest.password != "") {
                 user.password = passwordEncoder.encode(userInfoRequest.password)
             }
 
-            if ( (userInfoRequest.username == null || userInfoRequest.username == "")
-                || (userInfoRequest.phoneNumber == null || userInfoRequest.phoneNumber == "")
-                || (userInfoRequest.zipCode == null || userInfoRequest.zipCode == "")
-                || (userInfoRequest.address == null || userInfoRequest.address == "")
-                || (userInfoRequest.detailAddress == null || userInfoRequest.detailAddress == "")
+            if ( (userInfoRequest.username == "")
+                || (userInfoRequest.phoneNumber == "")
+                || (userInfoRequest.zipCode == "")
+                || (userInfoRequest.address == "")
+                || (userInfoRequest.detailAddress == "")
                 ) {
                 return Triple("fail", "updateUser", "invalid request")
             }
             else {
                 if (userInfo == null) {
-                    userInfoRepo.save(
-                        UserInfo(userId = user, phoneNumber = userInfoRequest.phoneNumber, zipCode = userInfoRequest.zipCode,
-                            address = userInfoRequest.address, detailAddress = userInfoRequest.detailAddress)
-                    )
-                }
-                else {
+                    userInfo = UserInfo(userId = user, phoneNumber = userInfoRequest.phoneNumber, zipCode = userInfoRequest.zipCode, detailAddress = userInfoRequest.detailAddress)
+                } else {
                     userInfo.phoneNumber = userInfoRequest.phoneNumber
                     userInfo.zipCode = userInfoRequest.zipCode
                     userInfo.address = userInfoRequest.address
                     userInfo.detailAddress = userInfoRequest.detailAddress
                 }
-
                 userRepo.save(user)
                 userInfoRepo.save(userInfo)
 
@@ -223,22 +219,22 @@ class UserService(
                 return Triple("fail", "resetPassword", "required password")
             }
             else {
-                userRepo.findByEmail(findUserResponse.email).let {
-                    if (it!= null) {
-                        if (it.username != findUserResponse.username) {
+                val user = userRepo.findByEmail(findUserResponse.email)
+                println("################ user @#$@#$@#$@ $user")
+                    if (user != null) {
+                        if (user.username != findUserResponse.username) {
                             return Triple("fail", "resetPassword", "incorrect username")
                         }
-                        it.password = passwordEncoder.encode(findUserResponse.password)
-                        userRepo.save(it)
+                        user.password = passwordEncoder.encode(findUserResponse.password)
+                        userRepo.save(user)
                         return Triple("success", "resetPassword", "")
                     } else {
-                        return Triple("fail", "resetPassword", "program error")
+                        return Triple("fail", "resetPassword", "invalid email")
                     }
-                }
             }
         } catch (e: Exception) {
             println("Service : UserService : resetPassword : [Catch Error] $e")
-            return Triple("fail", "resetPassword", "invalid email")
+            return Triple("fail", "resetPassword", "program error")
         }
     }
 
@@ -248,10 +244,14 @@ class UserService(
 
             val user = userRepo.findByEmail(response)
 
-            if (response == null || user == null) {
+            if (response == "") {
                 return Triple("fail", "deleteUser", "invalid token")
             }
-            else if (user!= null) {
+            else if (user != null) {
+                val userInfo = userInfoRepo.findByUserId(user)
+                if (userInfo != null) {
+                    userInfoRepo.delete(userInfo)
+                }
                 userRepo.delete(user)
                 return Triple("success", "deleteUser", "")
             } else {

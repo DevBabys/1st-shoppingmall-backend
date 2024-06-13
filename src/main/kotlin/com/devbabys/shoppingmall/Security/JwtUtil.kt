@@ -1,5 +1,6 @@
 package com.devbabys.shoppingmall.Security
 
+import com.devbabys.shoppingmall.DTO.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.TokenResponse
 import com.devbabys.shoppingmall.Repository.UserRepo
 import io.jsonwebtoken.Claims
@@ -11,7 +12,8 @@ import kotlin.collections.HashMap
 
 @Component
 class JwtUtil {
-    private val secretKey = Jwts.SIG.HS512.key().build();
+    private val secretKey = Jwts.SIG.HS512.key().build()
+    val tokenBlacklist = HashMap<String, Long>()
 
     fun generateToken(email: String): String {
         val claims: Map<String, Any> = HashMap()
@@ -25,14 +27,7 @@ class JwtUtil {
     }
 
     fun extractedEmail(token: String): String {
-        println("####### extractedEmail : $token")
         return extractAllClaims(token).payload.subject
-    }
-
-    fun extractedUserId(token: String): Long? {
-        lateinit var userRepo: UserRepo
-        val email: String = extractAllClaims(token).payload.subject
-        return userRepo.findByEmail(email).userId
     }
 
     fun isTokenExpired(token: String): Boolean {
@@ -44,11 +39,17 @@ class JwtUtil {
     }
 
     fun validateToken(token: String, email: String): Boolean {
-        println("####### validateToken : $email")
         val extractedEmail = extractedEmail(token)
-        println("####### validateToken : extractedEmail : $email")
-        println("####### validateToken : extractedEmail == email : ${extractedEmail == email}")
-        println("####### validateToken : isTokenExpired(token) : ${isTokenExpired(token)}")
         return (extractedEmail == email && !isTokenExpired(token))
+    }
+
+    fun addBlacklist(authenticationResponse: AuthenticationResponse) {
+        val token = authenticationResponse.token.substring(7)
+        val expiration = extractAllClaims(token).payload.expiration.time
+        tokenBlacklist[token] = expiration
+    }
+
+    fun getBlacklist(): HashMap<String, Long> {
+        return tokenBlacklist
     }
 }

@@ -38,14 +38,14 @@ class JwtService(
         return AuthenticationResponse(token)
     }
 
-    fun refreshToken(authenticationResponse: AuthenticationResponse): Boolean {
+    fun expireToken(authenticationResponse: AuthenticationResponse): Boolean {
         try {
-            val email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
-            println("######################## $email")
-            val isValidate = jwtUtil.validateToken(authenticationResponse.token, email)
-            println("######################## $isValidate")
+            val token = authenticationResponse.token.substring(7)
+            println("##### expireToken : $token #####")
+            val isValidate = !jwtUtil.isTokenExpired(token)
+            println("##### isValidate : $isValidate #####")
             if (isValidate) {
-                jwtUtil.generateToken(email)
+                jwtUtil.addBlacklist(authenticationResponse)
                 return true
             } else {
                 return false
@@ -57,7 +57,7 @@ class JwtService(
 
     fun validateToken(authenticationResponse: AuthenticationResponse): String {
         try {
-            var email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
+            val email = jwtUtil.extractedEmail(authenticationResponse.token.substring(7))
             return email
         } catch (e: Exception) {
             throw RuntimeException("EXPIRE_TOKEN_EXCEPTION", e)
