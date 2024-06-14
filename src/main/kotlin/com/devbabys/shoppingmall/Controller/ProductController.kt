@@ -2,7 +2,6 @@ package com.devbabys.shoppingmall.Controller
 
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
-import com.devbabys.shoppingmall.Model.Product
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.ImageService
 import com.devbabys.shoppingmall.Service.ProductService

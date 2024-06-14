@@ -37,7 +37,11 @@ class UserController(
         val (response, description, value) = userService.logout(authRequest)
         val result = mapOf("result" to response, "description" to description, "value" to value)
 
-        return ResponseEntity.ok(result)
+        return try {
+            ResponseEntity.ok(result)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("error test")
+        }
     }
 
     // 회원정보 보기

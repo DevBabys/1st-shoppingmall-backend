@@ -1,7 +1,6 @@
 package com.devbabys.shoppingmall.Security
 
-import com.devbabys.shoppingmall.DTO.TokenResponse
-import com.devbabys.shoppingmall.Repository.UserRepo
+import com.devbabys.shoppingmall.DTO.AuthenticationResponse
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
@@ -11,7 +10,8 @@ import kotlin.collections.HashMap
 
 @Component
 class JwtUtil {
-    private val secretKey = Jwts.SIG.HS512.key().build();
+    private val secretKey = Jwts.SIG.HS512.key().build()
+    val tokenBlacklist = HashMap<String, Long>()
 
     fun generateToken(email: String): String {
         val claims: Map<String, Any> = HashMap()
@@ -28,12 +28,6 @@ class JwtUtil {
         return extractAllClaims(token).payload.subject
     }
 
-    fun extractedUserId(token: String): Long? {
-        lateinit var userRepo: UserRepo
-        val email: String = extractAllClaims(token).payload.subject
-        return userRepo.findByEmail(email).userId
-    }
-
     fun isTokenExpired(token: String): Boolean {
         return extractAllClaims(token).payload.expiration.before(Date())
     }
@@ -45,5 +39,15 @@ class JwtUtil {
     fun validateToken(token: String, email: String): Boolean {
         val extractedEmail = extractedEmail(token)
         return (extractedEmail == email && !isTokenExpired(token))
+    }
+
+    fun addBlacklist(authenticationResponse: AuthenticationResponse) {
+        val token = authenticationResponse.token.substring(7)
+        val expiration = extractAllClaims(token).payload.expiration.time
+        tokenBlacklist[token] = expiration
+    }
+
+    fun getBlacklist(): HashMap<String, Long> {
+        return tokenBlacklist
     }
 }

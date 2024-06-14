@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface UserInfoRepo: JpaRepository<UserInfo, Long> {
     @Nullable
-    fun findByUserId(userId: User): UserInfo
+    fun findByUserId(userId: User): UserInfo?
 }
