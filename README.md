@@ -5,7 +5,7 @@
 * Gradle 8.5
 * Spring Boot 3.2.5
 * Port Number : 4001
-* Branch : 은별 - eunbyeol
+* Branch : 은별 - eunbyeol 
 
 ### Dev Env
 * application.properties 파일 의도적으로 배제하였음. 참고.

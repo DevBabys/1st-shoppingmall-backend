@@ -7,7 +7,7 @@ import lombok.Setter
 @Getter
 @Setter
 @Entity
-@Table(name = "product_images")
+@Table(name = "product_image")
 data class ProductImage (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -3,17 +3,17 @@ package com.devbabys.shoppingmall.Model
 import jakarta.persistence.*
 import lombok.Getter
 import lombok.Setter
-import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 
 @Getter
 @Setter
 @Entity
-@Table(name = "products")
-data class Product (
+@Table(name = "product")
+data class Product(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var productId : Long = 0, // 상품 식별 ID
+    var productId: Long = 0, // 상품 식별 ID
 
     @Column(nullable = false)
     var name: String, // 상품 이름
@@ -22,7 +22,7 @@ data class Product (
     var description: String? = null, // 상품 설명
 
     @Column(nullable = false)
-    var price: BigDecimal, // 상품 가격
+    var price: Long, // 상품 가격
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -31,9 +31,9 @@ data class Product (
     @Column(nullable = false)
     var quantity: Int, // 상품 수량
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(), // 등록일자
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime = LocalDateTime.now() // 수정일자
 )

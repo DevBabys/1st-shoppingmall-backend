@@ -2,13 +2,16 @@ package com.devbabys.shoppingmall.Controller
 
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
+import com.devbabys.shoppingmall.DTO.Product.ProductRequest
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.ImageService
 import com.devbabys.shoppingmall.Service.ProductService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 class ProductController(
@@ -48,9 +51,25 @@ class ProductController(
         return ResponseEntity.ok(result)
     }
 
+    @PostMapping("product/add")
+    fun addProduct(@RequestPart("product") productRequest: ProductRequest,
+                   @RequestPart("image") images: List<MultipartFile>)
+    : ResponseEntity<Map<String, String>> {
+        val (response, description, value) = productService.addProduct(productRequest, images)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
+
+    @GetMapping("product/list")
+    fun listProduct(): ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = productService.getProductList()
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
 
     @GetMapping("product/{num}")
-    @ResponseBody
     fun product(model: Model, @PathVariable num : Int) : String {
         println("num:\t${num}")
         return "ok"

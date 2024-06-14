@@ -2,21 +2,27 @@ package com.devbabys.shoppingmall.Service
 
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
+import com.devbabys.shoppingmall.DTO.Product.ProductRequest
 import com.devbabys.shoppingmall.Model.Product
 import com.devbabys.shoppingmall.Model.ProductCategory
-import com.devbabys.shoppingmall.Model.User
+import com.devbabys.shoppingmall.Model.ProductImage
 import com.devbabys.shoppingmall.Repository.ProductCategoryRepo
+import com.devbabys.shoppingmall.Repository.ProductImageRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
+import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Path
+import java.nio.file.Paths
 
 @Service
 class ProductService(
     @Autowired private val productRepo: ProductRepo,
     @Autowired private val categoryRepo: ProductCategoryRepo,
-    @Autowired private val userRepo: UserRepo
+    @Autowired private val imageRepo: ProductImageRepo,
+    @Autowired private val userRepo: UserRepo,
+    @Autowired private val imageService: ImageService
 ) {
     fun getCategoryList(): Triple<String, String, Any> {
         return Triple("success", "getCategoryList", categoryRepo.findAll())
@@ -75,6 +81,75 @@ class ProductService(
             }
         } catch (e: Exception) {
             return Triple("fail", "deleteCategory", "program error : $e")
+        }
+    }
+
+    fun getProductList(): Triple<String, String, Any> {
+        try {
+            val productList = productRepo.findAll()
+
+            var result: List<Pair<String, Any>> =  mutableListOf()
+            productList.forEach { product ->
+                val image = imageRepo.findByProductId(product)
+                val categoryId: Pair<String, Long> = Pair("category_id", product.categoryId.categoryId)
+
+                val productDetails = Pair("product",
+                    mapOf(
+                        "productId" to product.productId,
+                        "categoryId" to product.categoryId.categoryId,
+                        "primaryUrl" to image?.url,
+                        "price" to product.price,
+                        "quantity" to product.quantity
+                    )
+                )
+                result = result + productDetails
+            }
+//            val categoryList = categoryRepo.findAll()
+//            val imageList = imageRepo.findAll()
+
+//            productList.forEach { product ->
+//                val category = categoryList.find { it.categoryId == product.categoryId }
+//                val image = imageList.find { it.productId == product.productId }
+//                product.category = category
+//                product.image = image
+//            }
+
+            return Triple("success", "listProduct", result)
+        } catch (e: Exception) {
+            return Triple("fail", "listProduct", "program error : $e")
+        }
+    }
+
+    fun addProduct(productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
+        val category = categoryRepo.findById(productRequest.categoryId).orElse(null)
+            ?: return Triple("fail", "addProduct", "category not exists")
+
+        val product = Product(
+            name = productRequest.name,
+            description = productRequest.description,
+            price = productRequest.price,
+            categoryId = category,
+            quantity = productRequest.quantity
+        )
+        val productInfo = productRepo.save(product)
+
+        try {
+            var imageIndex = 0
+            var isPrimary = true
+            val url = "http://58.238.170.182:4001/files/"
+            images?.forEach { image ->
+                imageIndex += 1
+                val fileName = "${productInfo.productId}_${imageIndex}_${image.originalFilename}"
+                imageService.uploadImage(image, fileName)
+
+                if (imageIndex != 1 && isPrimary) {
+                    isPrimary = false
+                }
+                imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+            }
+            return Triple("success", "addProduct", product.productId.toString())
+        } catch (e: Exception) {
+            return Triple("fail", "addProduct", "file upload error : $e")
         }
     }
 }

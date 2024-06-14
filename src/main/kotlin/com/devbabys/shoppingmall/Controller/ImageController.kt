@@ -12,14 +12,19 @@ class ImageController(
     @Autowired private val imageService: ImageService,
 ) {
 
-    @PostMapping("/uploads")
-    fun uploadImage(@RequestParam("image") image: MultipartFile) {
-        val response = imageService.uploadImage(image)
-        println("################################# test : $response")
+    @PostMapping("/files/uploads")
+    fun uploadImage(@RequestParam("image") image: MultipartFile, @RequestParam("filename") filename: String): ResponseEntity<Map<String, String>> {
+        val response = imageService.uploadImage(image, filename)
+
+        return if (response) {
+            ResponseEntity.ok(mapOf("result" to "success", "description" to "uploadImage", "value" to ""))
+        } else {
+            ResponseEntity.ok(mapOf("result" to "fail", "description" to "uploadImage", "value" to "upload error"))
+        }
     }
 
     @GetMapping("/files/{filename}")
-    fun image(@PathVariable filename: String) : ResponseEntity<Resource> {
+    fun viewImage(@PathVariable filename: String) : ResponseEntity<Resource> {
         println("############################ test : uploadDir $filename")
         val response = imageService.getFile(filename)
 

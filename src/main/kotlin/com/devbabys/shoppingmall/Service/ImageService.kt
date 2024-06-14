@@ -19,8 +19,8 @@ class ImageService {
 
     val uploadDir = Paths.get("").toAbsolutePath().toString() + "/uploads"
 
-    fun uploadImage(image: MultipartFile): ResponseEntity<String> {
-        return try {
+    fun uploadImage(image: MultipartFile, filename: String): Boolean {
+        try {
             val projectDir = Paths.get("").toAbsolutePath().toString()
             val uploadDirPath = "$projectDir/uploads"
             val uploadDir = File(uploadDirPath)
@@ -28,13 +28,14 @@ class ImageService {
                 uploadDir.mkdirs()
             }
 
-            val filename = System.currentTimeMillis().toString() + ".jpg"
             val file = File(uploadDir, filename)
             FileOutputStream(file).use { fos -> fos.write(image.bytes) }
 
-            ResponseEntity("이미지 업로드 성공: ${file.absolutePath}", HttpStatus.OK)
-        } catch (e: IOException) {
-            ResponseEntity("이미지 업로드 실패: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+            return true
+        }
+        catch (e: IOException) {
+            println("########## ImageService : uploadImage : Catch Error : $e")
+            return false
         }
     }
 
