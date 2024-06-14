@@ -1,4 +1,5 @@
-# 코틀린 스프링부트 개발 환경
+# DevBabys Team 1st Project
+## [DeviMall] (가제)
 ### *Use Env*
 * Java Version : 21
 * Gradle 8.5
