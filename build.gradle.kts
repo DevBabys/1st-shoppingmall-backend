@@ -29,7 +29,6 @@ repositories {
 dependencies {
 	// SpringBoot Web & Template & JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -43,9 +42,6 @@ dependencies {
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
-
-	// H2
-	//runtimeOnly("com.h2database:h2:2.2.224")
 
 	// MySQL
 	implementation("mysql:mysql-connector-java:8.0.33")

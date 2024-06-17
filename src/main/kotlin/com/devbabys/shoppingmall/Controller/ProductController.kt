@@ -3,10 +3,14 @@ package com.devbabys.shoppingmall.Controller
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
 import com.devbabys.shoppingmall.DTO.Product.ProductRequest
+import com.devbabys.shoppingmall.Model.Product
+import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.ImageService
 import com.devbabys.shoppingmall.Service.ProductService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.ui.Model
@@ -17,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile
 class ProductController(
     @Autowired private val productService: ProductService,
     @Autowired private val imageService: ImageService,
-    @Autowired private val jwtUtil: JwtUtil
+    @Autowired private val jwtUtil: JwtUtil,
+    @Autowired private val productRepo: ProductRepo
 ) {
     @GetMapping("product/category/list")
     fun getProduct(): ResponseEntity<Map<String, Any>> {
@@ -62,17 +67,27 @@ class ProductController(
     }
 
     @GetMapping("product/list")
-    fun listProduct(): ResponseEntity<Map<String, Any>> {
-        val (response, description, value) = productService.getProductList()
+    fun listAllProduct(pageable: Pageable): ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = productService.getProductAllList(pageable)
         val result = mapOf("result" to response, "description" to description, "value" to value)
 
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("product/{num}")
-    fun product(model: Model, @PathVariable num : Int) : String {
-        println("num:\t${num}")
-        return "ok"
+    @GetMapping("product/list/{categoryId}")
+    fun listCategoryProduct(@PathVariable categoryId : Long, pageable: Pageable): ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = productService.getCategoryProductList(categoryId, pageable)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
+
+    @GetMapping("product/{productId}")
+    fun getProductDetail(@PathVariable productId : Long) : ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = productService.getProductDetail(productId)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
     }
 
 //    @PostMapping("product/create")

@@ -11,10 +11,10 @@ import com.devbabys.shoppingmall.Repository.ProductImageRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.nio.file.Path
-import java.nio.file.Paths
 
 @Service
 class ProductService(
@@ -55,7 +55,7 @@ class ProductService(
             } else {
                 val category = categoryRepo.findById(productCategoryRequest.categoryId!!)
                 if (category.isEmpty) {
-                    return Triple("fail", "updateCategory", "category not exists")
+                    return Triple("fail", "updateCategory", "category not exist")
                 } else {
                     categoryRepo.save(ProductCategory(
                         categoryId = productCategoryRequest.categoryId,
@@ -74,7 +74,7 @@ class ProductService(
         try {
             val category = categoryRepo.findById(productCategoryResponse.categoryId)
             if (category.isEmpty) {
-                return Triple("fail", "deleteCategory", "category not exists")
+                return Triple("fail", "deleteCategory", "category not exist")
             } else {
                 categoryRepo.deleteById(productCategoryResponse.categoryId)
                 return Triple("success", "deleteCategory", "")
@@ -84,45 +84,97 @@ class ProductService(
         }
     }
 
-    fun getProductList(): Triple<String, String, Any> {
+    fun getProductAllList(pageable: Pageable): Triple<String, String, Any> {
         try {
-            val productList = productRepo.findAll()
+            var customPage = pageable
+            if (pageable.pageNumber > 0) {
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
+            }
 
-            var result: List<Pair<String, Any>> =  mutableListOf()
+            val productList = productRepo.findAll(customPage)
+
+            var result: List<Any> =  mutableListOf()
             productList.forEach { product ->
                 val image = imageRepo.findByProductId(product)
-                val categoryId: Pair<String, Long> = Pair("category_id", product.categoryId.categoryId)
-
-                val productDetails = Pair("product",
-                    mapOf(
-                        "productId" to product.productId,
-                        "categoryId" to product.categoryId.categoryId,
-                        "primaryUrl" to image?.url,
-                        "price" to product.price,
-                        "quantity" to product.quantity
-                    )
+                val productDetails = mapOf(
+                    "productId" to product.productId,
+                    "categoryId" to product.categoryId.categoryId,
+                    "primaryUrl" to image?.url,
+                    "price" to product.price,
+                    "quantity" to product.quantity
                 )
                 result = result + productDetails
             }
-//            val categoryList = categoryRepo.findAll()
-//            val imageList = imageRepo.findAll()
-
-//            productList.forEach { product ->
-//                val category = categoryList.find { it.categoryId == product.categoryId }
-//                val image = imageList.find { it.productId == product.productId }
-//                product.category = category
-//                product.image = image
-//            }
-
-            return Triple("success", "listProduct", result)
+            return Triple("success", "listAllProduct", result)
         } catch (e: Exception) {
-            return Triple("fail", "listProduct", "program error : $e")
+            return Triple("fail", "listAllProduct", "program error : $e")
+        }
+    }
+
+    fun getCategoryProductList(categoryId: Long, pageable: Pageable): Triple<String, String, Any> {
+        try {
+            var customPage = pageable
+            if (pageable.pageNumber > 0) {
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
+            }
+
+            val category = categoryRepo.findById(categoryId).orElse(null)
+                ?: return Triple("fail", "listCategoryProduct", "category not exist")
+            val categoryProductList = productRepo.findByCategoryId(category, customPage)
+
+            var result: List<Any> =  mutableListOf()
+            categoryProductList.forEach { product ->
+                val image = imageRepo.findByProductId(product)
+                val productDetails = mapOf(
+                    "productId" to product.productId,
+                    "categoryId" to product.categoryId.categoryId,
+                    "primaryUrl" to image?.url,
+                    "price" to product.price,
+                    "quantity" to product.quantity
+                )
+                result = result + productDetails
+            }
+
+            return Triple("success", "listCategoryProduct", result)
+        } catch (e: Exception) {
+            return Triple("fail", "listCategoryProduct", "program error : $e")
+        }
+    }
+
+    fun getProductDetail(productId: Long): Triple<String, String, Any> {
+        try {
+            val product = productRepo.findById(productId).orElse(null)
+                ?: return Triple("fail", "getProductDetail", "product not exist")
+
+
+            var result: List<Any> =  mutableListOf()
+
+            val image = imageRepo.findByProductId(product)
+            val productDetails = mapOf(
+                "productId" to product.productId,
+                "name" to product.name,
+                "description" to product.description,
+                "categoryId" to product.categoryId.categoryId,
+                "primaryUrl" to image?.url,
+                "price" to product.price,
+                "quantity" to product.quantity,
+                "createdAt" to product.createdAt,
+                "updatedAt" to product.updatedAt,
+                "categoryId" to product.categoryId.categoryId,
+                "primaryUrl" to image?.url,
+                "imageUrl" to image // to do list
+            )
+
+
+            return Triple("success", "getProductDetail", product)
+        } catch (e: Exception) {
+            return Triple("fail", "getProductDetail", "program error : $e")
         }
     }
 
     fun addProduct(productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
         val category = categoryRepo.findById(productRequest.categoryId).orElse(null)
-            ?: return Triple("fail", "addProduct", "category not exists")
+            ?: return Triple("fail", "addProduct", "category not exist")
 
         val product = Product(
             name = productRequest.name,
