@@ -8,6 +8,7 @@ import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Security.JwtUtil
 import com.devbabys.shoppingmall.Service.ImageService
 import com.devbabys.shoppingmall.Service.ProductService
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -18,11 +19,8 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-class ProductController(
-    @Autowired private val productService: ProductService,
-    @Autowired private val imageService: ImageService,
-    @Autowired private val jwtUtil: JwtUtil,
-    @Autowired private val productRepo: ProductRepo
+class ProductController @Autowired constructor(
+    private val productService: ProductService
 ) {
     @GetMapping("product/category/list")
     fun getProduct(): ResponseEntity<Map<String, Any>> {
@@ -86,18 +84,7 @@ class ProductController(
     fun getProductDetail(@PathVariable productId : Long) : ResponseEntity<Map<String, Any>> {
         val (response, description, value) = productService.getProductDetail(productId)
         val result = mapOf("result" to response, "description" to description, "value" to value)
-
         return ResponseEntity.ok(result)
     }
 
-//    @PostMapping("product/create")
-//    @ResponseBody
-//    fun createPost(
-//        @RequestHeader("Authorization") authorizationHeader: String,
-//        @RequestBody productRequest: ProductRequest
-//    ): Product {
-//        val token = authorizationHeader.substring(7) // "Bearer " 부분 제거
-//        val userId = jwtUtil.extractedUserId(token)
-//        return productService.createProduct(userId, productRequest.title, productRequest.content)
-//    }
 }

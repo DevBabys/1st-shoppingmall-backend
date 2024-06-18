@@ -30,4 +30,16 @@ class ImageController(
 
         return response
     }
+
+    @DeleteMapping("/files/{filename}")
+    fun deleteImage(@PathVariable filename: String) : ResponseEntity<Map<String, String>> {
+        println("############################ test : uploadDir $filename")
+        val response = imageService.deleteFile(filename)
+
+        return if (response) {
+            ResponseEntity.ok(mapOf("result" to "success", "description" to "deleteImage", "value" to ""))
+        } else {
+            ResponseEntity.ok(mapOf("result" to "fail", "description" to "deleteImage", "value" to "delete file error"))
+        }
+    }
 }

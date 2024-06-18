@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProductImageRepo: JpaRepository<ProductImage, Long> {
     @Query("SELECT p FROM ProductImage p WHERE p.isPrimary = true AND p.productId = :productId")
-    fun findByProductId(productId: Product): ProductImage?
+    fun findByProductIdAndIsPrimary(productId: Product): ProductImage?
+
+    fun findByProductId(productId: Product): List<ProductImage>
 }

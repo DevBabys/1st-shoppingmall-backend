@@ -9,7 +9,7 @@ import com.devbabys.shoppingmall.Model.ProductImage
 import com.devbabys.shoppingmall.Repository.ProductCategoryRepo
 import com.devbabys.shoppingmall.Repository.ProductImageRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
-import com.devbabys.shoppingmall.Repository.UserRepo
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -17,12 +17,11 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
 @Service
-class ProductService(
-    @Autowired private val productRepo: ProductRepo,
-    @Autowired private val categoryRepo: ProductCategoryRepo,
-    @Autowired private val imageRepo: ProductImageRepo,
-    @Autowired private val userRepo: UserRepo,
-    @Autowired private val imageService: ImageService
+class ProductService @Autowired constructor(
+    private val productRepo: ProductRepo,
+    private val categoryRepo: ProductCategoryRepo,
+    private val imageRepo: ProductImageRepo,
+    private val imageService: ImageService
 ) {
     fun getCategoryList(): Triple<String, String, Any> {
         return Triple("success", "getCategoryList", categoryRepo.findAll())
@@ -94,14 +93,14 @@ class ProductService(
             val productList = productRepo.findAll(customPage)
 
             var result: List<Any> =  mutableListOf()
-            productList.forEach { product ->
-                val image = imageRepo.findByProductId(product)
+            productList.forEach {
+                val image = imageRepo.findByProductIdAndIsPrimary(it)
                 val productDetails = mapOf(
-                    "productId" to product.productId,
-                    "categoryId" to product.categoryId.categoryId,
+                    "productId" to it.productId,
+                    "categoryId" to it.categoryId.categoryId,
                     "primaryUrl" to image?.url,
-                    "price" to product.price,
-                    "quantity" to product.quantity
+                    "price" to it.price,
+                    "quantity" to it.quantity
                 )
                 result = result + productDetails
             }
@@ -123,14 +122,14 @@ class ProductService(
             val categoryProductList = productRepo.findByCategoryId(category, customPage)
 
             var result: List<Any> =  mutableListOf()
-            categoryProductList.forEach { product ->
-                val image = imageRepo.findByProductId(product)
+            categoryProductList.forEach {
+                val image = imageRepo.findByProductIdAndIsPrimary(it)
                 val productDetails = mapOf(
-                    "productId" to product.productId,
-                    "categoryId" to product.categoryId.categoryId,
+                    "productId" to it.productId,
+                    "categoryId" to it.categoryId.categoryId,
                     "primaryUrl" to image?.url,
-                    "price" to product.price,
-                    "quantity" to product.quantity
+                    "price" to it.price,
+                    "quantity" to it.quantity
                 )
                 result = result + productDetails
             }
@@ -146,27 +145,30 @@ class ProductService(
             val product = productRepo.findById(productId).orElse(null)
                 ?: return Triple("fail", "getProductDetail", "product not exist")
 
-
-            var result: List<Any> =  mutableListOf()
-
             val image = imageRepo.findByProductId(product)
+
+            var imageResult: List<Any> =  mutableListOf()
+            image.forEach {
+                val temp = mapOf(
+                    "imageId" to it.imageId,
+                    "url" to it.url,
+                    "isPrimary" to it.isPrimary)
+                imageResult = imageResult + temp
+            }
+
             val productDetails = mapOf(
                 "productId" to product.productId,
                 "name" to product.name,
                 "description" to product.description,
-                "categoryId" to product.categoryId.categoryId,
-                "primaryUrl" to image?.url,
+                "category" to product.categoryId,
                 "price" to product.price,
                 "quantity" to product.quantity,
-                "createdAt" to product.createdAt,
-                "updatedAt" to product.updatedAt,
-                "categoryId" to product.categoryId.categoryId,
-                "primaryUrl" to image?.url,
-                "imageUrl" to image // to do list
+                "image" to imageResult,
+                "createdAt" to product.createdAt.toString(),
+                "updatedAt" to product.updatedAt.toString()
             )
 
-
-            return Triple("success", "getProductDetail", product)
+            return Triple("success", "getProductDetail", productDetails)
         } catch (e: Exception) {
             return Triple("fail", "getProductDetail", "program error : $e")
         }
@@ -202,6 +204,46 @@ class ProductService(
             return Triple("success", "addProduct", product.productId.toString())
         } catch (e: Exception) {
             return Triple("fail", "addProduct", "file upload error : $e")
+        }
+    }
+
+    fun updateProduct(productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
+        try {
+            val product = productRequest.productId?.let { productRepo.findById(it).orElse(null) }
+                ?: return Triple("fail", "updateProduct", "product not exist")
+            val category = categoryRepo.findById(productRequest.categoryId).orElse(null)
+                ?: return Triple("fail", "updateProduct", "category not exist")
+
+            val productInfo = productRepo.save(
+                Product(
+                    name = productRequest.name,
+                    description = productRequest.description,
+                    price = productRequest.price,
+                    categoryId = category,
+                    quantity = productRequest.quantity
+                )
+            )
+            val image = imageRepo.findByProductId(product)
+            image.forEach {
+                imageRepo.delete(it)
+            }
+
+            var imageIndex = 0
+            var isPrimary = true
+            val url = "http://58.238.170.182:4001/files/"
+            images?.forEach {
+                imageIndex += 1
+                val fileName = "${productInfo.productId}_${imageIndex}_${it.originalFilename}"
+                imageService.uploadImage(it, fileName)
+
+                if (imageIndex != 1 && isPrimary) {
+                    isPrimary = false
+                }
+                imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+            }
+            return Triple("success", "updateProduct", "")
+        } catch (e: Exception){
+            return Triple("fail", "updateProduct", "program error : $e")
         }
     }
 }

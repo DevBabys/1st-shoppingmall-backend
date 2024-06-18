@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -53,5 +55,21 @@ class ImageService {
         } catch (e: Exception) {
             return ResponseEntity.notFound().build()
         }
+    }
+
+    fun deleteFile(@PathVariable filename: String): Boolean {
+        try {
+            val filePath = Paths.get(uploadDir, filename)
+            if (Files.exists(filePath)) {
+                Files.delete(filePath)
+                return true
+            } else {
+                throw FileNotFoundException("File not found: $filename")
+            }
+        } catch (e: Exception) {
+            println("########## ImageService : deleteFile : Catch Error : $e")
+            return false
+        }
+
     }
 }
