@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/utility.js}"></script>
+    <script th:src="@{/js/user.js}"></script>
+</head>
+<body>
+    <!-- 헤더 포함 -->
+    <div th:replace="~{header :: header}"></div>
+
+    <main>
+        <section class="auth-form">
+            <h2>Create a New Account</h2>
+            <div id="register-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+                <button id="registerButton">Register</button>
+            </div>
+            <div th:if="${result == false}">
+                <span>회원가입에 실패했습니다.</span>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 포함 -->
+    <div th:replace="~{footer :: footer}"></div>
+</body>
+</html>
