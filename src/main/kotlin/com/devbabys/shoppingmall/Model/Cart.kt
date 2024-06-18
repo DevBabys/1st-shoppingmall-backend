@@ -3,7 +3,7 @@ package com.devbabys.shoppingmall.Model
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "carts")
+@Table(name = "cart")
 data class Cart(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val cartId: Long = 0,

@@ -2,7 +2,6 @@ package com.devbabys.shoppingmall
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication
 class DevbabysApplication

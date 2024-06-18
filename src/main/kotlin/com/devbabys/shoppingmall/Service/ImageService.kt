@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -19,8 +21,8 @@ class ImageService {
 
     val uploadDir = Paths.get("").toAbsolutePath().toString() + "/uploads"
 
-    fun uploadImage(image: MultipartFile): ResponseEntity<String> {
-        return try {
+    fun uploadImage(image: MultipartFile, filename: String): Boolean {
+        try {
             val projectDir = Paths.get("").toAbsolutePath().toString()
             val uploadDirPath = "$projectDir/uploads"
             val uploadDir = File(uploadDirPath)
@@ -28,13 +30,14 @@ class ImageService {
                 uploadDir.mkdirs()
             }
 
-            val filename = System.currentTimeMillis().toString() + ".jpg"
             val file = File(uploadDir, filename)
             FileOutputStream(file).use { fos -> fos.write(image.bytes) }
 
-            ResponseEntity("이미지 업로드 성공: ${file.absolutePath}", HttpStatus.OK)
-        } catch (e: IOException) {
-            ResponseEntity("이미지 업로드 실패: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+            return true
+        }
+        catch (e: IOException) {
+            println("########## ImageService : uploadImage : Catch Error : $e")
+            return false
         }
     }
 
@@ -52,5 +55,21 @@ class ImageService {
         } catch (e: Exception) {
             return ResponseEntity.notFound().build()
         }
+    }
+
+    fun deleteFile(@PathVariable filename: String): Boolean {
+        try {
+            val filePath = Paths.get(uploadDir, filename)
+            if (Files.exists(filePath)) {
+                Files.delete(filePath)
+                return true
+            } else {
+                throw FileNotFoundException("File not found: $filename")
+            }
+        } catch (e: Exception) {
+            println("########## ImageService : deleteFile : Catch Error : $e")
+            return false
+        }
+
     }
 }

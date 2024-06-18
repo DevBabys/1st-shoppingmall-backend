@@ -4,8 +4,8 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name = "order")
-data class Order(
+@Table(name = "product_order")
+data class ProductOrder(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val orderId: Long = 0, // 주문번호
 

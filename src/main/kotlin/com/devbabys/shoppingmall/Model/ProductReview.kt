@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 @Getter
 @Setter
 @Entity
-@Table(name = "product_reviews")
-data class ProductReviews (
+@Table(name = "product_review")
+data class ProductReview (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var reviewId : Long = 0, // 리뷰 식별 ID

@@ -7,7 +7,7 @@ import lombok.Setter
 @Getter
 @Setter
 @Entity
-@Table(name = "product_categories")
+@Table(name = "product_category")
 data class ProductCategory (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +18,4 @@ data class ProductCategory (
 
     @Column(columnDefinition = "TEXT")
     val description: String? = null
-) { }
+)
