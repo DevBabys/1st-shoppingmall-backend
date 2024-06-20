@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class WebConfig @Autowired constructor(
     private val authorityInterceptor: AuthorityInterceptor,
-    private val uriConfig: UriConfig
+    uriConfig: UriConfig
 ) : WebMvcConfigurer {
 
     private val adminAllowedUrls = uriConfig.getAdminAllowedUrls()
