@@ -1,4 +1,4 @@
-package com.devbabys.shoppingmall.Model
+package com.devbabys.shoppingmall.Entity
 
 import jakarta.persistence.*
 import lombok.Getter
@@ -11,11 +11,11 @@ import lombok.Setter
 data class ProductCategory (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val categoryId: Long = 0,
+    var categoryId: Long = 0,
 
     @Column(nullable = false, unique = true)
-    val name: String,
+    var name: String,
 
     @Column(columnDefinition = "TEXT")
-    val description: String? = null
+    var description: String? = null
 )

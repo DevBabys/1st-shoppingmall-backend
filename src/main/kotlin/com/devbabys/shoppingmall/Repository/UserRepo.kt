@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Repository
 
-import com.devbabys.shoppingmall.Model.User
+import com.devbabys.shoppingmall.Entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.lang.Nullable
 import org.springframework.stereotype.Repository

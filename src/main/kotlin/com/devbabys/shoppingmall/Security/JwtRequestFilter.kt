@@ -64,12 +64,17 @@ class JwtRequestFilter(
             val error2 = "Cannot pass null or empty values to constructor"
             // http 응답 두 번
             val error3 = "Request processing failed: java.lang.IllegalStateException: getWriter() has already been called for this response"
+            // 토큰 헤더 정보가 없음
+            val error4 = "Request processing failed: java.lang.NullPointerException: getHeader(...) must not be null"
+
             if (error1 == e.message) {
                 httpResponse(response, "fail", "token not exist")
             } else if (error2 == e.message) {
                 httpResponse(response, "fail", "not found user in database")
             } else if (error3 == e.message) {
                 httpResponse(response, "fail", "http request error")
+            } else if (error4 == e.message) {
+            httpResponse(response, "fail", "Authorization header value is null")
             } else {
                 httpResponse(response, "fail", "program error : ${e.message}")
             }

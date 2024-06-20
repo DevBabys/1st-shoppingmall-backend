@@ -1,4 +1,4 @@
-package com.devbabys.shoppingmall.Model
+package com.devbabys.shoppingmall.Entity
 
 import jakarta.persistence.*
 import lombok.Getter

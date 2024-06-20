@@ -1,7 +1,7 @@
 package com.devbabys.shoppingmall.Repository
 
-import com.devbabys.shoppingmall.Model.Product
-import com.devbabys.shoppingmall.Model.ProductCategory
+import com.devbabys.shoppingmall.Entity.Product
+import com.devbabys.shoppingmall.Entity.ProductCategory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

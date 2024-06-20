@@ -1,26 +1,32 @@
 package com.devbabys.shoppingmall.Service
 
+import com.devbabys.shoppingmall.DTO.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
 import com.devbabys.shoppingmall.DTO.Product.ProductRequest
-import com.devbabys.shoppingmall.Model.Product
-import com.devbabys.shoppingmall.Model.ProductCategory
-import com.devbabys.shoppingmall.Model.ProductImage
+import com.devbabys.shoppingmall.DTO.Product.ProductResponse
+import com.devbabys.shoppingmall.Entity.Product
+import com.devbabys.shoppingmall.Entity.ProductCategory
+import com.devbabys.shoppingmall.Entity.ProductImage
 import com.devbabys.shoppingmall.Repository.ProductCategoryRepo
 import com.devbabys.shoppingmall.Repository.ProductImageRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.devbabys.shoppingmall.Repository.UserRuleRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class ProductService @Autowired constructor(
     private val productRepo: ProductRepo,
     private val categoryRepo: ProductCategoryRepo,
     private val imageRepo: ProductImageRepo,
+    private val ruleRepo: UserRuleRepo,
+    private val jwtService: JwtService,
     private val imageService: ImageService
 ) {
     fun getCategoryList(): Triple<String, String, Any> {
@@ -47,7 +53,8 @@ class ProductService @Autowired constructor(
         }
     }
 
-    fun updateCategory(productCategoryRequest: ProductCategoryRequest): Triple<String, String, String> {
+    fun updateCategory(productCategoryRequest: ProductCategoryRequest)
+    : Triple<String, String, String> {
         try {
             if (productCategoryRequest.name == "") {
                 return Triple("fail", "updateCategory", "category name to modify is empty")
@@ -69,7 +76,8 @@ class ProductService @Autowired constructor(
         }
     }
 
-    fun deleteCategory(productCategoryResponse: ProductCategoryResponse): Triple<String, String, String> {
+    fun deleteCategory(productCategoryResponse: ProductCategoryResponse)
+    : Triple<String, String, String> {
         try {
             val category = categoryRepo.findById(productCategoryResponse.categoryId)
             if (category.isEmpty) {
@@ -174,12 +182,17 @@ class ProductService @Autowired constructor(
         }
     }
 
-    fun addProduct(productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
+    fun addProduct(authResponse: AuthenticationResponse,
+                   productRequest: ProductRequest,
+                   images: List<MultipartFile>?): Triple<String, String, String> {
         val category = categoryRepo.findById(productRequest.categoryId).orElse(null)
             ?: return Triple("fail", "addProduct", "category not exist")
 
+        val user = jwtService.extractedUserInfo(authResponse)
+
         val product = Product(
             name = productRequest.name,
+            userId = user,
             description = productRequest.description,
             price = productRequest.price,
             categoryId = category,
@@ -191,59 +204,94 @@ class ProductService @Autowired constructor(
             var imageIndex = 0
             var isPrimary = true
             val url = "http://58.238.170.182:4001/files/"
-            images?.forEach { image ->
+            val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_hhmmss"))
+
+            images?.forEach {
                 imageIndex += 1
-                val fileName = "${productInfo.productId}_${imageIndex}_${image.originalFilename}"
-                imageService.uploadImage(image, fileName)
+                val fileName = "${productInfo.productId}_${imageIndex}_${it.originalFilename?.split(".")?.get(0)}_${now}.png"
+                imageService.uploadImage(it, fileName)
 
                 if (imageIndex != 1 && isPrimary) {
                     isPrimary = false
                 }
-                imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+
+                if (it.isEmpty) {
+                    imageRepo.save(ProductImage(productId = productInfo, url = url+"not_image.png", isPrimary = isPrimary))
+                } else {
+                    imageRepo.save(ProductImage(productId = productInfo, url = url + fileName, isPrimary = isPrimary))
+                }
             }
-            return Triple("success", "addProduct", product.productId.toString())
+             return Triple("success", "addProduct", product.productId.toString())
         } catch (e: Exception) {
             return Triple("fail", "addProduct", "file upload error : $e")
         }
     }
 
-    fun updateProduct(productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
+    fun updateProduct(authResponse: AuthenticationResponse,
+                      productRequest: ProductRequest, images: List<MultipartFile>?): Triple<String, String, String> {
         try {
             val product = productRequest.productId?.let { productRepo.findById(it).orElse(null) }
                 ?: return Triple("fail", "updateProduct", "product not exist")
             val category = categoryRepo.findById(productRequest.categoryId).orElse(null)
                 ?: return Triple("fail", "updateProduct", "category not exist")
 
+            val user = jwtService.extractedUserInfo(authResponse)
+            val rule = ruleRepo.findByUserId(user)
+            if (rule!!.grade == 3 && product.userId.userId != user.userId) {
+                return Triple("fail", "updateProduct", "user not have access. not owned by the user.")
+            }
+
             val productInfo = productRepo.save(
                 Product(
+                    productId = product.productId,
                     name = productRequest.name,
+                    userId = product.userId,
                     description = productRequest.description,
                     price = productRequest.price,
                     categoryId = category,
                     quantity = productRequest.quantity
                 )
             )
-            val image = imageRepo.findByProductId(product)
-            image.forEach {
-                imageRepo.delete(it)
-            }
 
             var imageIndex = 0
             var isPrimary = true
             val url = "http://58.238.170.182:4001/files/"
+            val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_hhmmss"))
+
             images?.forEach {
                 imageIndex += 1
-                val fileName = "${productInfo.productId}_${imageIndex}_${it.originalFilename}"
-                imageService.uploadImage(it, fileName)
+                val fileName = "${productInfo.productId}_${imageIndex}_${it.originalFilename?.split(".")?.get(0)}_${now}.png"
 
                 if (imageIndex != 1 && isPrimary) {
                     isPrimary = false
                 }
-                imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+
+                if (!it.isEmpty) {
+                    if (imageIndex == 1) {
+                        val image = imageRepo.findByProductId(product)
+                        image.forEach { imageObject -> imageRepo.delete(imageObject) }
+                    }
+                    imageService.uploadImage(it, fileName)
+                    imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+                }
             }
             return Triple("success", "updateProduct", "")
         } catch (e: Exception){
             return Triple("fail", "updateProduct", "program error : $e")
+        }
+    }
+
+    fun deleteProduct(authResponse: AuthenticationResponse,
+                      productResponse: ProductResponse): Triple<String, String, String> {
+        try {
+            val product = productRepo.findById(productResponse.productId).orElse(null)
+            val productImage = imageRepo.findById(product.productId)
+
+            /* to do list : 보류, 상품 리뷰 API 개발 후 마저 개발하기로 함 */
+
+            return Triple("success", "deleteProduct", "")
+        } catch (e: Exception){
+            return Triple("fail", "deleteProduct", "program error : $e")
         }
     }
 }

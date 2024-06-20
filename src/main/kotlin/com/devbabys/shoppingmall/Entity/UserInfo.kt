@@ -1,4 +1,4 @@
-package com.devbabys.shoppingmall.Model
+package com.devbabys.shoppingmall.Entity
 
 import jakarta.persistence.*
 import lombok.Getter
@@ -7,7 +7,7 @@ import lombok.Setter
 @Getter
 @Setter
 @Entity
-@Table(name = "userInfo")
+@Table(name = "user_info")
 data class UserInfo (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,7 @@ data class UserInfo (
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val userId: User,  // 유저 식별 ID
+    var userId: User,  // 유저 식별 ID
 
     var phoneNumber: String? = null, // 연락처
 

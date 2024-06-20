@@ -29,11 +29,11 @@ class SecurityConfig(
 
     private val allowedUrls = arrayOf("/",
         "/css/**", "/js/**", "/uploads/**", "/files/**", // 정적 자원에 대한 접근 허용
-        "/user/register", "/user/login", "user/logout", // 로그인 관련
-        "/user/getuser", "user/update", "user/findemail", "user/finduser", "user/resetpw", "user/delete", "/user/cart",  // 회원 관련
+        "/user/register", "/user/login", "/user/logout", // 로그인 관련
+        "/user/getuser", "/user/update", "/user/findemail", "/user/finduser", "/user/resetpw", "/user/delete", "/user/cart",  // 회원 관련
         "/product/category/add", "/product/category/list", "/product/category/delete", "/product/category/update", // 상품 카테고리 관련
         "/product/list", "/product/list/*", "/product/*", "/product/add", "/product/update", "/product/delete",// 상품 페이지 관련
-        "test" // 테스트를 위한 URL 경로
+        "/test" // 테스트를 위한 URL 경로
     )
 
     @Bean
