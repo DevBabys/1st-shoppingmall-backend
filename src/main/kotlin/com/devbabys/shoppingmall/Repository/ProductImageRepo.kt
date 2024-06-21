@@ -1,7 +1,7 @@
 package com.devbabys.shoppingmall.Repository
 
-import com.devbabys.shoppingmall.Model.Product
-import com.devbabys.shoppingmall.Model.ProductImage
+import com.devbabys.shoppingmall.Entity.Product
+import com.devbabys.shoppingmall.Entity.ProductImage
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository

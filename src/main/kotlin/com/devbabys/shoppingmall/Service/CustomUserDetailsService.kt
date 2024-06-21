@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.Model.User
+import com.devbabys.shoppingmall.Entity.User
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

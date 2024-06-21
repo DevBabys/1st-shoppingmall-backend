@@ -3,8 +3,10 @@ package com.devbabys.shoppingmall.Service
 import com.devbabys.shoppingmall.DTO.*
 import com.devbabys.shoppingmall.DTO.User.*
 import com.devbabys.shoppingmall.DTO.User.UserRegisterRequest
-import com.devbabys.shoppingmall.Model.User
-import com.devbabys.shoppingmall.Model.UserInfo
+import com.devbabys.shoppingmall.Entity.User
+import com.devbabys.shoppingmall.Entity.UserInfo
+import com.devbabys.shoppingmall.Entity.UserRule
+import com.devbabys.shoppingmall.Repository.UserRuleRepo
 import com.devbabys.shoppingmall.Repository.UserInfoRepo
 import com.devbabys.shoppingmall.Repository.UserRepo
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,15 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserService(
-    @Autowired
-    private val passwordEncoder: BCryptPasswordEncoder,
-    @Autowired
-    private val userRepo: UserRepo,
-    @Autowired
-    private val userInfoRepo: UserInfoRepo,
-    @Autowired
-    private val jwtService: JwtService
+class UserService @Autowired constructor(
+    val passwordEncoder: BCryptPasswordEncoder,
+    val userRepo: UserRepo,
+    val userInfoRepo: UserInfoRepo,
+    val ruleRepo: UserRuleRepo,
+    val jwtService: JwtService
 ) {
 
     // 비밀번호 찾기 시, 인증 코드 : 로직 생략되었으므로 비활성화
@@ -35,8 +34,13 @@ class UserService(
             // 회원가입 기능 수행
             else {
                 val hashedPassword = passwordEncoder.encode(request.password)
+
                 val user = User(email = request.email, password = hashedPassword, username = request.username)
-                userRepo.save(user)
+                val userData = userRepo.save(user)
+
+                val rule = UserRule(userId = userData)
+                ruleRepo.save(rule)
+
                 return Triple("success", "registerUser", "")
             }
         } catch (e: Exception) {

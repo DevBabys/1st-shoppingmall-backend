@@ -1,4 +1,4 @@
-package com.devbabys.shoppingmall.Model
+package com.devbabys.shoppingmall.Entity
 
 import jakarta.persistence.*
 import lombok.Getter
@@ -14,6 +14,14 @@ data class Product(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var productId: Long = 0, // 상품 식별 ID
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    var userId: User, // 작성 그룹
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    var categoryId: ProductCategory,  // 상품 카테고리
+
     @Column(nullable = false)
     var name: String, // 상품 이름
 
@@ -23,16 +31,15 @@ data class Product(
     @Column(nullable = false)
     var price: Long, // 상품 가격
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    val categoryId: ProductCategory,  // 상품 카테고리
-
     @Column(nullable = false)
     var quantity: Int, // 상품 수량
 
+    @Column(nullable = false)
+    var isPublic: Boolean = true, // 공개 여부
+
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(), // 등록일자
+    var createdAt: LocalDateTime = LocalDateTime.now(), // 등록일자
 
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now() // 수정일자
+    var updatedAt: LocalDateTime = LocalDateTime.now() // 수정일자
 )

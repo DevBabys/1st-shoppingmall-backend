@@ -3,7 +3,6 @@ package com.devbabys.shoppingmall.Service
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,11 +22,8 @@ class ImageService {
 
     fun uploadImage(image: MultipartFile, filename: String): Boolean {
         try {
-            val projectDir = Paths.get("").toAbsolutePath().toString()
-            val uploadDirPath = "$projectDir/uploads"
-            val uploadDir = File(uploadDirPath)
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs()
+            if (!File(uploadDir).exists()) {
+                File(uploadDir).mkdirs()
             }
 
             val file = File(uploadDir, filename)

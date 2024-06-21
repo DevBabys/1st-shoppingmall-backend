@@ -2,6 +2,8 @@ package com.devbabys.shoppingmall.Service
 
 import com.devbabys.shoppingmall.DTO.AuthenticationRequest
 import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.Entity.User
+import com.devbabys.shoppingmall.Repository.UserRepo
 import com.devbabys.shoppingmall.Security.JwtUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
@@ -12,13 +14,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
 @Service
-class JwtService(
-    @Autowired
+class JwtService @Autowired constructor(
     private val authenticationManager: AuthenticationManager,
-    @Autowired
     private val jwtUtil: JwtUtil,
-    @Autowired
-    private val userDetailsService: CustomUserDetailsService
+    private val userDetailsService: CustomUserDetailsService,
+    private val userRepo: UserRepo
 ) {
 
     fun createAuthenticationToken(authenticationRequest: AuthenticationRequest): AuthenticationResponse {
@@ -62,5 +62,11 @@ class JwtService(
         } catch (e: Exception) {
             throw RuntimeException("EXPIRE_TOKEN_EXCEPTION", e)
         }
+    }
+
+    fun extractedUserInfo(authenticationResponse: AuthenticationResponse): User {
+        val response = validateToken(authenticationResponse)
+        val user = userRepo.findByEmail(response)
+        return user!!
     }
 }

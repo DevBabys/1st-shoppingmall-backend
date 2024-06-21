@@ -1,4 +1,4 @@
-package com.devbabys.shoppingmall.Model
+package com.devbabys.shoppingmall.Entity
 
 import jakarta.persistence.*
 
@@ -6,16 +6,16 @@ import jakarta.persistence.*
 @Table(name = "cart")
 data class Cart(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val cartId: Long = 0,
+    var cartId: Long = 0,
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val userId: User,
+    var userId: User,
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    val product: Product,
+    var product: Product,
 
     @Column(nullable = false)
-    val quantity: Int
+    var quantity: Int
 )
