@@ -13,6 +13,7 @@ import com.devbabys.shoppingmall.Repository.ProductImageRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Repository.UserRuleRepo
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -30,7 +31,11 @@ class ProductService @Autowired constructor(
     private val imageService: ImageService
 ) {
     fun getCategoryList(): Triple<String, String, Any> {
-        return Triple("success", "getCategoryList", categoryRepo.findAll())
+        val resultMap = mapOf(
+            "total" to categoryRepo.count(),
+            "data" to categoryRepo.findAll()
+        )
+        return Triple("success", "getCategoryList", resultMap)
     }
 
     fun addCategory(productCategoryRequest: ProductCategoryRequest): Triple<String, String, String> {
@@ -112,7 +117,13 @@ class ProductService @Autowired constructor(
                 )
                 result = result + productDetails
             }
-            return Triple("success", "listAllProduct", result)
+
+            val resultMap = mapOf(
+                "total" to productRepo.count(),
+                "data" to result
+            )
+
+            return Triple("success", "listAllProduct", resultMap)
         } catch (e: Exception) {
             return Triple("fail", "listAllProduct", "program error : $e")
         }
@@ -142,7 +153,12 @@ class ProductService @Autowired constructor(
                 result = result + productDetails
             }
 
-            return Triple("success", "listCategoryProduct", result)
+            val resultMap = mapOf(
+                "total" to productRepo.countByCategoryId(category),
+                "data" to result
+            )
+
+            return Triple("success", "listCategoryProduct", resultMap)
         } catch (e: Exception) {
             return Triple("fail", "listCategoryProduct", "program error : $e")
         }

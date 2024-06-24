@@ -15,6 +15,10 @@ class WebConfig @Autowired constructor(
 
     private val adminAllowedUrls = uriConfig.getAdminAllowedUrls()
     private val sellerAllowedUrls = uriConfig.getSellerAllowedUrls()
+    private val exclusiveUrls = arrayOf(
+        "/product/category/list", // 상품 카테고리 관련
+        "/product/list/**" // 상품 리스트 관련
+    )
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
@@ -28,6 +32,6 @@ class WebConfig @Autowired constructor(
         // 인터셉터 등록
         registry.addInterceptor(authorityInterceptor)
             .addPathPatterns(*adminAllowedUrls, *sellerAllowedUrls) // 인터셉터 적용 URL 패턴
-            .excludePathPatterns("/product/category/list") // 제외 URL 패턴
+            .excludePathPatterns(*exclusiveUrls) // 제외 URL 패턴
     }
 }
