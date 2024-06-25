@@ -34,20 +34,14 @@ class AuthorityInterceptor @Autowired constructor(
 
         println("################################ user permissions check $userAuth")
 
-        if ( isAllowed(adminAllowedUrls, request.requestURI)
-            && userAuth!!.grade > 2 )
+        if ( (isAllowed(adminAllowedUrls, request.requestURI) && userAuth!!.grade > 2)
+            || (isAllowed(sellerAllowedUrls, request.requestURI) && userAuth!!.grade > 3) )
         {
             println("adminAllowedUrls preHandle: ${request.requestURI}")
             httpResponse(response, "fail", "user has not permissions")
             return false
         }
-        else if ( isAllowed(sellerAllowedUrls, request.requestURI)
-            && userAuth!!.grade > 3 )
-        {
-            println("sellerAllowedUrls preHandle: ${request.requestURI}")
-            httpResponse(response, "fail", "user has not permissions")
-            return false
-        }
+
         return true
     }
 
