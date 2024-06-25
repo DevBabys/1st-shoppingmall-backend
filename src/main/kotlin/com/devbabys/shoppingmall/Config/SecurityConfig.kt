@@ -2,6 +2,7 @@ package com.devbabys.shoppingmall.Config
 
 import com.devbabys.shoppingmall.Security.JwtRequestFilter
 import com.devbabys.shoppingmall.Service.CustomUserDetailsService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -10,11 +11,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class SecurityConfig(
     private val customUserDetailsService: CustomUserDetailsService,
-    private val jwtRequestFilter: JwtRequestFilter
+    private val jwtRequestFilter: JwtRequestFilter,
+    @Value("\${security.cors.url}") private val corsUrl: String
 ) {
     @Bean
     @Throws(Exception::class)
@@ -39,6 +44,7 @@ class SecurityConfig(
     @Bean
     protected fun securityFilterChain (http: HttpSecurity) =
         http
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(*allowedUrls).permitAll()    // 허용할 URL 주소
@@ -47,4 +53,16 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }    // 세션 미사용
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
+
+    @Bean
+    protected fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf(corsUrl)
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+        // 없으면 cors에러
+        configuration.setAllowedHeaders(listOf("Content-Type", "Authorization")) // Allowed request headers
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
 }
