@@ -12,7 +12,8 @@ class UriConfig {
 
     // 판매자와 관리자가 접근할 수 있는 URL
     private val sellerAllowedUrls = arrayOf(
-        "/product/**"
+        "/test/test/test"
+        //"/product/**"
     )
 
     @Bean

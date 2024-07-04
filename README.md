@@ -16,7 +16,7 @@
 > HOST : https://shopping-front-app.vercel.app
 * Back-End (Spring Boot Project) / 고은별
 > Github : https://github.com/DevBabys/1st-shoppingmall-backend  
-> HOST : http://58.238.170.182:4001
+> HOST : https://project1.babychat.xyz
 * DevBabys Team
 > GitHub : https://github.com/DevBabys  
 > Notion : https://www.notion.so/ShoppingMall-ERD-42cc7fb576274bffbd351d9d241e7c8b
@@ -36,4 +36,7 @@
 * 2024-06-19 : 상품 추가 및 수정 기능 구현 (파일 업로드 기능 포함)
 * 2024-06-20 : 권한에 따른 액세스를 허용하는 인터셉터 추가 및 상품 카테고리, 상품 API 권한 확인 로직 추가
 * 2024-06-24 : 카테고리, 상품 조회 시 프론트 엔드에서 보여줄 페이지의 수를 표현하기 위해 조회 API 응답 구조 변경, 조회 관련 API 액세스 오류에 따른 인터셉터 예외 URL 추가
+* 2024-07-02 : 카트 추가 기능 구현
+* 2024-07-03 : nginx를 이용한 웹서버 환경 구축
+* 2024-07-04 : SSL 인증서를 추가한 백엔드용 임시 도메인 구축 및 API 도메인 주소 이전 (http://58.238.170.xxx:4001 -> https://project1.babychat.xyz) (이전 채팅 프로젝트의 서브 도메인 사용)
 ### 작성중

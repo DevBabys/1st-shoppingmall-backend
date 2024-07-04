@@ -29,6 +29,8 @@ class ProductService @Autowired constructor(
     private val jwtService: JwtService,
     private val imageService: ImageService
 ) {
+    val imgUrl = "https://project1.babychat.xyz/files/"
+
     fun getCategoryList(): Triple<String, String, Any> {
         val resultMap = mapOf(
             "total" to categoryRepo.count(),
@@ -218,7 +220,6 @@ class ProductService @Autowired constructor(
         try {
             var imageIndex = 0
             var isPrimary = true
-            val url = "http://58.238.170.182:4001/files/"
             val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_hhmmss"))
 
             images?.forEach {
@@ -231,9 +232,9 @@ class ProductService @Autowired constructor(
                 }
 
                 if (it.isEmpty) {
-                    imageRepo.save(ProductImage(productId = productInfo, url = url+"not_image.png", isPrimary = isPrimary))
+                    imageRepo.save(ProductImage(productId = productInfo, url = imgUrl+"not_image.png", isPrimary = isPrimary))
                 } else {
-                    imageRepo.save(ProductImage(productId = productInfo, url = url + fileName, isPrimary = isPrimary))
+                    imageRepo.save(ProductImage(productId = productInfo, url = imgUrl + fileName, isPrimary = isPrimary))
                 }
             }
              return Triple("success", "addProduct", product.productId.toString())
@@ -270,7 +271,6 @@ class ProductService @Autowired constructor(
 
             var imageIndex = 0
             var isPrimary = true
-            val url = "http://58.238.170.182:4001/files/"
             val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_hhmmss"))
 
             images?.forEach {
@@ -287,7 +287,7 @@ class ProductService @Autowired constructor(
                         image.forEach { imageObject -> imageRepo.delete(imageObject) }
                     }
                     imageService.uploadImage(it, fileName)
-                    imageRepo.save(ProductImage(productId = productInfo, url = url+fileName, isPrimary = isPrimary))
+                    imageRepo.save(ProductImage(productId = productInfo, url = imgUrl+fileName, isPrimary = isPrimary))
                 }
             }
             return Triple("success", "updateProduct", "")
