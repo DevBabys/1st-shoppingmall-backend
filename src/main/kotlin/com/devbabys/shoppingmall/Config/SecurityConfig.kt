@@ -38,6 +38,7 @@ class SecurityConfig(
         "/user/getuser", "/user/update", "/user/findemail", "/user/finduser", "/user/resetpw", "/user/delete", "/user/cart",  // 회원 관련
         "/product/category/add", "/product/category/list", "/product/category/delete", "/product/category/update", // 상품 카테고리 관련
         "/product/list", "/product/list/*", "/product/*", "/product/add", "/product/update", "/product/delete",// 상품 페이지 관련
+        "cart/add", // 카트 관련
         "/test" // 테스트를 위한 URL 경로
     )
 
