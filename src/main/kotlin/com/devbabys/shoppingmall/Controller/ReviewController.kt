@@ -19,7 +19,7 @@ class ReviewController @Autowired constructor(
      */
     @PostMapping("review/add")
     fun saveReview(@RequestHeader("Authorization") authRequest: AuthenticationResponse, @RequestBody reviewRequest: ReviewRequest) :ResponseEntity<Map<String, String>> {
-        val (response, description, value) = reviewService.addReview(authRequest, reviewRequest);
+        val (response, description, value) = reviewService.addReview(authRequest, reviewRequest)
         val result = mapOf("result" to response, "description" to description, "value" to value)
         return ResponseEntity.ok(result)
     }
