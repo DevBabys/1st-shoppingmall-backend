@@ -23,7 +23,7 @@ class ReviewService @Autowired constructor(
             val product = productRepo.findById(reviewRequest.productId).orElse(null)
                 ?: return Triple("fail", "addReview", "product not exist")
 
-            val isProductOrder = orderRepo.findByUserIdAndProductId(user, product);
+            val isProductOrder = orderRepo.findByUserIdAndProductId(user, product)
 
             // 주문한 제품에 대해서만 리뷰 추가
             if(isProductOrder == null){
