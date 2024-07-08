@@ -20,14 +20,15 @@ class ReviewService @Autowired constructor(
                   reviewRequest: ReviewRequest): Triple<String, String, String> {
         try {
             val user = jwtService.extractedUserInfo(authResponse)
-            val isProductOrder = orderRepo.findByUserIdAnAndProductId(user.userId, reviewRequest.productId);
+            val product = productRepo.findById(reviewRequest.productId).orElse(null)
+                ?: return Triple("fail", "addReview", "product not exist")
+
+            val isProductOrder = orderRepo.findByUserIdAndProductId(user, product);
+
             // 주문한 제품에 대해서만 리뷰 추가
             if(isProductOrder == null){
                 return Triple("fail", "addReview", "The item is not in your order history")
             }
-
-            val product = productRepo.findById(reviewRequest.productId).orElse(null)
-                ?: return Triple("fail", "addReview", "product not exist")
 
             val review = ProductReview(productId = product, userId = user, rating = reviewRequest.rating, comment = reviewRequest.comment, likes = 0)
             val saveReview = reviewRepo.save(review)
