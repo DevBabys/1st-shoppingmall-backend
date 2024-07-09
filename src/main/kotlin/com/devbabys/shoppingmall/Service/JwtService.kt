@@ -1,10 +1,10 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.DTO.AuthenticationRequest
-import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationRequest
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.Entity.User
 import com.devbabys.shoppingmall.Repository.UserRepo
-import com.devbabys.shoppingmall.Security.JwtUtil
+import com.devbabys.shoppingmall.Utility.JwtUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException

@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Controller
 
-import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Review.ReviewRequest
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

@@ -1,6 +1,7 @@
-package com.devbabys.shoppingmall.Security
+package com.devbabys.shoppingmall.Filter
 
 import com.devbabys.shoppingmall.Service.CustomUserDetailsService
+import com.devbabys.shoppingmall.Utility.JwtUtil
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -12,19 +13,21 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 
-
 @Component
 class JwtRequestFilter(
     private val customUserDetailsService: CustomUserDetailsService,
     private val jwtUtil: JwtUtil
 ): OncePerRequestFilter() {
-
+    /* #################### JWT 인증 관련 필터 ####################
+    * 요청 데이터의 헤더에서 Authorization 키의 JWT 토큰 값 확인
+    * 토큰 유효성 확인 및 액세스 제한 로직 수행
+    * ###########################################################*/
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val authorizationHeader = request.getHeader("Authorization")
         var email: String? = null
         var jwt: String? = null
-        val tokenBlacklist = jwtUtil.getBlacklist()
+        val tokenBlacklist = jwtUtil.getBlacklist() // 로그아웃 시 토큰 폐기를 위해 블랙리스트 사용
 
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

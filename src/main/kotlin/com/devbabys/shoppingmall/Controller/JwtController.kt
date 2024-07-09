@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.RestController
 class JwtController (
 
 ) {
-    // to do : jwt 관련 api 개발 예정
+    // TODO : jwt 관련 api 개발 예정 (access token 작업시 동시 수행)
 }
