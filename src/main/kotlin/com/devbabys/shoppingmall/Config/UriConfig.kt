@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class UriConfig {
+    // 베이스 URL
+    private val BASEURL = "https://project1.babychat.xyz/"
+
     // 관리자만 접근할 수 있는 URL
     private val adminAllowedUrls = arrayOf(
         "/product/category/**" // 카테고리 관련
@@ -24,5 +27,15 @@ class UriConfig {
     @Bean
     fun getSellerAllowedUrls(): Array<String> {
         return sellerAllowedUrls
+    }
+
+    // 관리자와 해당 판매자만 접근할 수 있는 URL
+    private val certSellerAllowedUrls = arrayOf(
+        "/cart/update", "/cart/delete"
+    )
+
+    @Bean
+    fun getCertSellerAllowedUrls(): Array<String> {
+        return certSellerAllowedUrls
     }
 }

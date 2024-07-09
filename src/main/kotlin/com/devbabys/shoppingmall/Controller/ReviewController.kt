@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Controller
 
-import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Review.ReviewRequest
 import com.devbabys.shoppingmall.Service.ReviewService
 import org.springframework.beans.factory.annotation.Autowired

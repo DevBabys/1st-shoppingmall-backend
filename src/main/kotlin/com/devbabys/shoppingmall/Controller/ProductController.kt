@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Controller
 
-import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryRequest
 import com.devbabys.shoppingmall.DTO.Product.ProductCategoryResponse
 import com.devbabys.shoppingmall.DTO.Product.ProductRequest

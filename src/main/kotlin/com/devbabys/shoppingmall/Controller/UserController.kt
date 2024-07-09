@@ -1,6 +1,7 @@
 package com.devbabys.shoppingmall.Controller
 
-import com.devbabys.shoppingmall.DTO.*
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationRequest
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.User.*
 import com.devbabys.shoppingmall.Service.UserService
 import org.springframework.beans.factory.annotation.Autowired
