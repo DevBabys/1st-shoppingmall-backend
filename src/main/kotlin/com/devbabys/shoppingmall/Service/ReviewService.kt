@@ -1,6 +1,6 @@
 package com.devbabys.shoppingmall.Service
 
-import com.devbabys.shoppingmall.DTO.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Review.ReviewRequest
 import com.devbabys.shoppingmall.Entity.ProductReview
 import com.devbabys.shoppingmall.Repository.ProductOrderRepo
