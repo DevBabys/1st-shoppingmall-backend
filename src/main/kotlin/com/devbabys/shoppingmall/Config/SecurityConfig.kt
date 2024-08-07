@@ -19,7 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class SecurityConfig(
-    private val customUserDetailsService: CustomUserDetailsService,
+    //private val customUserDetailsService: CustomUserDetailsService,
     private val jwtRequestFilter: JwtRequestFilter,
     private val requestCachingFilter: RequestCachingFilter,
     @Value("\${security.cors.url}") private val corsUrl: String
@@ -28,8 +28,7 @@ class SecurityConfig(
     @Throws(Exception::class)
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
         println("########## Config : SecurityConfig : authenticationManager ##########")
-        return authenticationConfiguration.getAuthenticationManager()
-        //return authenticationConfiguration.authenticationManager as ProviderManager
+        return authenticationConfiguration.authenticationManager
     }
 
     @Bean
@@ -42,6 +41,8 @@ class SecurityConfig(
         "/product/category/add", "/product/category/list", "/product/category/delete", "/product/category/update", // 상품 카테고리 관련
         "/product/list", "/product/list/*", "/product/*", "/product/add", "/product/update", "/product/delete",// 상품 페이지 관련
         "/cart/list", "/cart/add", "/cart/update", "/cart/delete", // 카트 관련
+        "/order/**", "/order/add", "/order/complete", // 주문 관련
+        "/payment/toss/**", "/payment/toss/order",// 결제 관련
         "/test" // 테스트를 위한 URL 경로
     )
 
@@ -59,18 +60,17 @@ class SecurityConfig(
                     .anyRequest().authenticated()    // 그 외의 모든 요청은 인증 필요
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }    // 세션 미사용
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java) // JWT 인증 필터
             .addFilterBefore(requestCachingFilter, SecurityContextHolderFilter::class.java)  // 요청 데이터 캐시화 필터
-            .build()
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java) // JWT 인증 필터
+            .build()!!
 
     // CORS 처리
     @Bean
     protected fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf(corsUrl)
+        configuration.allowedOrigins = listOf(corsUrl, "https://babychat.xyz/")
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
-        // 없으면 cors에러
-        configuration.setAllowedHeaders(listOf("Content-Type", "Authorization")) // Allowed request headers
+        configuration.setAllowedHeaders(listOf("Content-Type", "Authorization"))
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source

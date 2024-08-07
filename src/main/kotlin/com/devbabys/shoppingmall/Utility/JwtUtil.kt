@@ -4,13 +4,30 @@ import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
+import javax.crypto.SecretKey
 import kotlin.collections.HashMap
 
 @Component
-class JwtUtil {
-    private val secretKey = Jwts.SIG.HS512.key().build()
+class JwtUtil @Autowired constructor(
+    @Value("\${jwt.secret.key}") private val base64SecretKey: String // 테스트용 정적 대칭키
+) {
+    /* 동적 대칭키
+    * 암호화 방식이 동적으로 변경됨.
+    * 서버 재시작 시 JWT 알고리즘이 초기화되며 모든 토큰을 사용할 수 없고 재발급해야 함
+    * */
+    //private val secretKey = Jwts.SIG.HS512.key().build()
+
+    /* 정적 대칭키: 테스트용 */
+    // Base64로 인코딩된 고정된 비밀 키 문자열은 최소 256비트의 키를 사용해야 하므로 길게 써야함)
+    // SecretKey 객체로 변환
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64SecretKey))
+
+    // 토큰 폐기 리스트
     val tokenBlacklist = HashMap<String, Long>()
 
     // JWT 토큰 생성

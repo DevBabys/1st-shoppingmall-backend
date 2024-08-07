@@ -16,7 +16,6 @@ class UriConfig {
     // 판매자와 관리자가 접근할 수 있는 URL
     private val sellerAllowedUrls = arrayOf(
         "/test/test/test"
-        //"/product/**"
     )
 
     @Bean
@@ -29,13 +28,14 @@ class UriConfig {
         return sellerAllowedUrls
     }
 
-    // 관리자와 해당 판매자만 접근할 수 있는 URL
-    private val certSellerAllowedUrls = arrayOf(
-        "/cart/update", "/cart/delete"
+    // 관리자와 해당 유저만 접근할 수 있는 URL
+    private val certUserAllowedUrls = arrayOf(
+        "/cart/update", "/cart/delete",
+        "/order/update", "/order/delete"
     )
 
     @Bean
-    fun getCertSellerAllowedUrls(): Array<String> {
-        return certSellerAllowedUrls
+    fun getCertUserAllowedUrls(): Array<String> {
+        return certUserAllowedUrls
     }
 }

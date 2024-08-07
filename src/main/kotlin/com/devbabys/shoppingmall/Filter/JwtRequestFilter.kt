@@ -24,6 +24,8 @@ class JwtRequestFilter(
     * ###########################################################*/
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
+        println("########## JwtRequestFilter Process ##########")
+
         val authorizationHeader = request.getHeader("Authorization")
         var email: String? = null
         var jwt: String? = null
@@ -50,14 +52,15 @@ class JwtRequestFilter(
             if (email != null && SecurityContextHolder.getContext().authentication == null) {
                 val userDetails = customUserDetailsService.loadUserByUsername(email)
                 if (jwtUtil.validateToken(jwt!!, userDetails.username)) {
-                    val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(
+                    val authentication = UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.authorities
                     )
-                    usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                    SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+                    authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                    SecurityContextHolder.getContext().authentication = authentication
                 }
             }
             chain.doFilter(request, response)
+
         } catch (e: Exception) {
             println("########## JwtRequestFilter : doFilterInternal : [Catch Error] $e ##########")
 
