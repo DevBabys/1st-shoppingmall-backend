@@ -56,29 +56,4 @@ class RequestCachingFilter : Filter {
             }
         }
     }
-
-    class JsonBodyHttpServletRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-        private var jsonBody: ByteArray? = null
-
-        init {
-            jsonBody = request.inputStream.readBytes()
-        }
-
-        override fun getInputStream(): ServletInputStream {
-            return JsonServletInputStream(ByteArrayInputStream(jsonBody))
-        }
-
-        override fun getReader(): BufferedReader {
-            return BufferedReader(InputStreamReader(inputStream))
-        }
-
-        private class JsonServletInputStream(private val jsonBodyInputStream: ByteArrayInputStream) : ServletInputStream() {
-            override fun read() = jsonBodyInputStream.read()
-            override fun isFinished() = jsonBodyInputStream.available() == 0
-            override fun isReady() = true
-            override fun setReadListener(listener: ReadListener?) {
-                throw UnsupportedOperationException("ReadListener is not supported")
-            }
-        }
-    }
 }

@@ -41,6 +41,7 @@ out/
 
 ### App Properties ###
 application-dbsettings.properties
+/src/main/resources/application-database.properties
 
 ### Uploa File Directory ###
 /uploads/
