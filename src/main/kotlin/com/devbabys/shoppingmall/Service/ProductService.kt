@@ -111,7 +111,9 @@ class ProductService @Autowired constructor(
                 val image = imageRepo.findByProductIdAndIsPrimary(it)
                 val productDetails = mapOf(
                     "productId" to it.productId,
+                    "productName" to it.name,
                     "categoryId" to it.categoryId.categoryId,
+                    "categoryName" to it.categoryId.name,
                     "primaryUrl" to image?.url,
                     "price" to it.price,
                     "quantity" to it.quantity

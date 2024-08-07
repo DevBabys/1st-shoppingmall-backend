@@ -3,7 +3,8 @@ package com.devbabys.shoppingmall.Service
 import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Review.ReviewRequest
 import com.devbabys.shoppingmall.Entity.ProductReview
-import com.devbabys.shoppingmall.Repository.ProductOrderRepo
+import com.devbabys.shoppingmall.Repository.OrderDetailRepo
+import com.devbabys.shoppingmall.Repository.OrderRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Repository.ProductReviewRepo
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class ReviewService @Autowired constructor(
     private val reviewRepo: ProductReviewRepo,
-    private val orderRepo: ProductOrderRepo,
+    private val orderDetailRepo: OrderDetailRepo,
     private val productRepo: ProductRepo,
     private val jwtService: JwtService,
 ){
@@ -25,7 +26,7 @@ class ReviewService @Autowired constructor(
             val product = productRepo.findById(reviewRequest.productId).orElse(null)
                 ?: return Triple("fail", "addReview", "product not exist")
 
-            val isProductOrder = orderRepo.findByUserIdAndProductId(user, product)
+            val isProductOrder = orderDetailRepo.findByUserIdAndProductId(user, product)
 
             // 주문한 제품에 대해서만 리뷰 추가
             if(isProductOrder == null){

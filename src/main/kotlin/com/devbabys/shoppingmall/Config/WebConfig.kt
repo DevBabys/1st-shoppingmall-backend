@@ -24,7 +24,10 @@ class WebConfig @Autowired constructor(
     )
 
     /* CertainUserAccessInterceptor 관련 */
-    private val certUserAllowedUrls = uriConfig.getCertSellerAllowedUrls()
+    private val certUserAllowedUrls = uriConfig.getCertUserAllowedUrls()
+    private val certUserExclusiveUrls = arrayOf(
+        "/text/test/test"
+    )
 
     // CORS 설정
     override fun addCorsMappings(registry: CorsRegistry) {
@@ -41,8 +44,10 @@ class WebConfig @Autowired constructor(
         registry.addInterceptor(authorityInterceptor)
             .addPathPatterns(*adminAllowedUrls, *sellerAllowedUrls) // 인터셉터 적용 URL 패턴
             .excludePathPatterns(*exclusiveUrls) // 제외 URL 패턴
+
         // CertainUserAccessInterceptor 인터셉터 등록
         registry.addInterceptor(certainUserAccessInterceptor)
             .addPathPatterns(*certUserAllowedUrls)
+            .excludePathPatterns(*certUserExclusiveUrls)
     }
 }

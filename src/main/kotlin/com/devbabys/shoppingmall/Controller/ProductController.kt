@@ -56,8 +56,8 @@ class ProductController @Autowired constructor(
 
     @PostMapping("product/add")
     fun addProduct(@RequestHeader("Authorization") authResponse: AuthenticationResponse,
-                   @RequestPart("product") productRequest: ProductRequest,
-                   @RequestPart("image") images: List<MultipartFile>)
+                   @RequestPart("product", required = false) productRequest: ProductRequest,
+                   @RequestPart("image", required = false) images: List<MultipartFile>)
     : ResponseEntity<Map<String, String>> {
         val (response, description, value) = productService.addProduct(authResponse, productRequest, images)
         val result = mapOf("result" to response, "description" to description, "value" to value)

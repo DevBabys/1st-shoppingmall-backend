@@ -14,4 +14,5 @@ interface ProductRepo: JpaRepository<Product, Long> {
     override fun findAll(pageable: Pageable): Page<Product>
     fun findByCategoryId(categoryId: ProductCategory, pageable: Pageable): Page<Product>
     fun countByCategoryId(categoryId: ProductCategory): Long
+    fun findByProductIdIn(productId: List<Long>): List<Product>
 }
