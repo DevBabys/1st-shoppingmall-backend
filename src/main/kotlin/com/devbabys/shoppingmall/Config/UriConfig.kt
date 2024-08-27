@@ -10,12 +10,19 @@ class UriConfig {
 
     // 관리자만 접근할 수 있는 URL
     private val adminAllowedUrls = arrayOf(
-        "/product/category/**" // 카테고리 관련
+        "/product/category/**", // 카테고리 관련
+        "/order/changeState" // 결제 상태 변경
     )
 
     // 판매자와 관리자가 접근할 수 있는 URL
     private val sellerAllowedUrls = arrayOf(
         "/test/test/test"
+    )
+
+    // AuthorityInterceptor 제외 URL
+    private val exclusiveUrls = arrayOf(
+    "/product/category/list", // 상품 카테고리 관련
+    "/product/list/**" // 상품 리스트 관련
     )
 
     @Bean
@@ -28,14 +35,29 @@ class UriConfig {
         return sellerAllowedUrls
     }
 
+    @Bean
+    fun getExclusiveUrls(): Array<String> {
+        return exclusiveUrls
+    }
+
     // 관리자와 해당 유저만 접근할 수 있는 URL
     private val certUserAllowedUrls = arrayOf(
         "/cart/update", "/cart/delete",
         "/order/update", "/order/delete"
     )
 
+    // CertainUserAccessInterceptor 제외 URL
+    private val certUserExclusiveUrls = arrayOf(
+        "/test/test/test"
+    )
+
     @Bean
     fun getCertUserAllowedUrls(): Array<String> {
         return certUserAllowedUrls
+    }
+
+    @Bean
+    fun getCertUserExclusiveUrls(): Array<String> {
+        return certUserExclusiveUrls
     }
 }

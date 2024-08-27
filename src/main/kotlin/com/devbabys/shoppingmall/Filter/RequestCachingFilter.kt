@@ -21,12 +21,14 @@ class RequestCachingFilter : Filter {
             val requestUri = request.requestURI
 
             // 특정 URL 패턴을 확인하고 필터 처리 여부 결정: 멀티 파트의 경우 캐시화를 하면 오류가 발생하므로 제외함
-            if (requestUri.startsWith("/product/add") || requestUri.startsWith("/product/update")) {
+            if (requestUri.startsWith("/product/add")
+                    || requestUri.startsWith("/product/update")
+                    //|| requestUri.startsWith("/order/complete")
+                ) {
                 // 특정 URL일 경우 필터 처리를 생략
                 chain.doFilter(request, response)
                 return
             }
-
             val wrappedRequest = if (request is HttpServletRequest) CachedBodyHttpServletRequest(request) else request
             chain.doFilter(wrappedRequest, response)
         }

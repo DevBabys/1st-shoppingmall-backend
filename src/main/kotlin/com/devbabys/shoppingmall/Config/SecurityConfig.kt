@@ -41,7 +41,7 @@ class SecurityConfig(
         "/product/category/add", "/product/category/list", "/product/category/delete", "/product/category/update", // 상품 카테고리 관련
         "/product/list", "/product/list/*", "/product/*", "/product/add", "/product/update", "/product/delete",// 상품 페이지 관련
         "/cart/list", "/cart/add", "/cart/update", "/cart/delete", // 카트 관련
-        "/order/**", "/order/add", "/order/complete", // 주문 관련
+        "/order/list", "order/list/*", "/order/add", "/order/complete", "/order/fail", "/order/changeState", // 주문 관련
         "/payment/toss/**", "/payment/toss/order",// 결제 관련
         "/test" // 테스트를 위한 URL 경로
     )

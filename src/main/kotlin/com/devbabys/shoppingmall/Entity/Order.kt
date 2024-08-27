@@ -39,6 +39,9 @@ data class Order(
     @Column(name="memo")
     var memo: String? = null, // 요청 사항
 
+    @Column(name="txId")
+    var txId: String? = null, // 결제 완료 시 카드사에서 반환하는 결제ID
+
     @Column(name = "created_at", nullable = false, updatable = false)
     var orderedAt: LocalDateTime = LocalDateTime.now(), // 주문 일자
 )

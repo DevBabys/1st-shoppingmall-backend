@@ -18,16 +18,11 @@ class WebConfig @Autowired constructor(
     /* AuthorityInterceptor 관련 */
     private val adminAllowedUrls = uriConfig.getAdminAllowedUrls()
     private val sellerAllowedUrls = uriConfig.getSellerAllowedUrls()
-    private val exclusiveUrls = arrayOf(
-        "/product/category/list", // 상품 카테고리 관련
-        "/product/list/**" // 상품 리스트 관련
-    )
+    private val exclusiveUrls = uriConfig.getExclusiveUrls()
 
     /* CertainUserAccessInterceptor 관련 */
     private val certUserAllowedUrls = uriConfig.getCertUserAllowedUrls()
-    private val certUserExclusiveUrls = arrayOf(
-        "/text/test/test"
-    )
+    private val certUserExclusiveUrls = uriConfig.getCertUserExclusiveUrls()
 
     // CORS 설정
     override fun addCorsMappings(registry: CorsRegistry) {
