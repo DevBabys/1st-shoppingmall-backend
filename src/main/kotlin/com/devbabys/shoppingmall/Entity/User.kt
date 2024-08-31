@@ -18,7 +18,7 @@ data class User (
     var email: String,
 
     @Column(length = 300)
-    var password: String,
+    var password: String?,
 
     @Column(length = 20, nullable = false)
     var username: String,

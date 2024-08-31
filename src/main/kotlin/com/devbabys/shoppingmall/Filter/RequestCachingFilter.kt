@@ -21,12 +21,14 @@ class RequestCachingFilter : Filter {
             val requestUri = request.requestURI
 
             // 특정 URL 패턴을 확인하고 필터 처리 여부 결정: 멀티 파트의 경우 캐시화를 하면 오류가 발생하므로 제외함
-            if (requestUri.startsWith("/product/add") || requestUri.startsWith("/product/update")) {
+            if (requestUri.startsWith("/product/add")
+                    || requestUri.startsWith("/product/update")
+                    //|| requestUri.startsWith("/order/complete")
+                ) {
                 // 특정 URL일 경우 필터 처리를 생략
                 chain.doFilter(request, response)
                 return
             }
-
             val wrappedRequest = if (request is HttpServletRequest) CachedBodyHttpServletRequest(request) else request
             chain.doFilter(wrappedRequest, response)
         }
@@ -53,31 +55,6 @@ class RequestCachingFilter : Filter {
             override fun isReady(): Boolean = true
             override fun setReadListener(listener: ReadListener) {
                 throw UnsupportedOperationException("setReadListener is not implemented")
-            }
-        }
-    }
-
-    class JsonBodyHttpServletRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-        private var jsonBody: ByteArray? = null
-
-        init {
-            jsonBody = request.inputStream.readBytes()
-        }
-
-        override fun getInputStream(): ServletInputStream {
-            return JsonServletInputStream(ByteArrayInputStream(jsonBody))
-        }
-
-        override fun getReader(): BufferedReader {
-            return BufferedReader(InputStreamReader(inputStream))
-        }
-
-        private class JsonServletInputStream(private val jsonBodyInputStream: ByteArrayInputStream) : ServletInputStream() {
-            override fun read() = jsonBodyInputStream.read()
-            override fun isFinished() = jsonBodyInputStream.available() == 0
-            override fun isReady() = true
-            override fun setReadListener(listener: ReadListener?) {
-                throw UnsupportedOperationException("ReadListener is not supported")
             }
         }
     }

@@ -1,27 +1,121 @@
 package com.devbabys.shoppingmall.Service
 
 import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
+import com.devbabys.shoppingmall.DTO.Order.OrderHistoryRequest
 import com.devbabys.shoppingmall.DTO.Order.OrderRequest
+import com.devbabys.shoppingmall.DTO.Order.OrderResponse
+import com.devbabys.shoppingmall.DTO.Order.OrderStateRequest
 import com.devbabys.shoppingmall.Entity.Order
 import com.devbabys.shoppingmall.Entity.OrderDetail
-import com.devbabys.shoppingmall.Entity.Product
 import com.devbabys.shoppingmall.Repository.OrderDetailRepo
 import com.devbabys.shoppingmall.Repository.OrderRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class OrderService @Autowired constructor(
     private val jwtService: JwtService,
-    private val productService: ProductService,
     private val orderRepo: OrderRepo,
     private val orderDetailRepo: OrderDetailRepo,
-    private val productRepo: ProductRepo
-    //private val shippingAddressService: ShippingAddressService,
-    //private val orderItemService: OrderItemService,
+    private val productRepo: ProductRepo,
+    @Value("\${portone.store.id}") private val storeId: String,
+    @Value("\${portone.channel.key}") private val channelKey: String
 ) {
+    fun getOrderListAll(authResponse: AuthenticationResponse, pageable: Pageable): Triple<String, String, Any> {
+        try {
+            var customPage = pageable
+            if (pageable.pageNumber > 0) {
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
+            }
+
+            val user = jwtService.extractedUserInfo(authResponse)
+            val orderList = orderRepo.findByUserIdOrderByOrderIdDesc(user, customPage)
+            var result: List<Any> = mutableListOf()
+
+            orderList.forEach { it ->
+                val orderDetail = orderDetailRepo.findFirstByOrderId(it)
+                val orderCount = orderDetailRepo.countByOrderId(it)
+                val order = mapOf(
+                    "orderId" to it.orderId,
+                    "orderName" to orderDetail!!.productId.name + " x" +orderDetail.quantity + " 외 " + (orderCount-1) + "건",
+                    "paymentId" to it.paymentId,
+                    "totalPrice" to it.totalPrice,
+                    "orderState" to it.orderState,
+                    "trackingNo" to it.trackingNo,
+                    "memo" to it.memo,
+                    "orderedAt" to it.orderedAt
+                )
+                result = result + order
+            }
+
+            return Triple("success", "getOrderListAll", result)
+
+        } catch (e: Exception) {
+            return Triple("fail", "getOrderListAll", "program error : $e")
+        }
+    }
+
+    fun getOrderListByPeriod(authResponse: AuthenticationResponse,
+                             startDate: LocalDate?,
+                             endDate: LocalDate?,
+                             pageable: Pageable)
+    : Triple<String, String, Any> {
+        try {
+            var customPage = pageable
+            if (pageable.pageNumber > 0) {
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
+            }
+
+            val user = jwtService.extractedUserInfo(authResponse)
+
+            // 시작일이 없으면 오류 반환
+            if (startDate == null) {
+                return Triple("fail", "getOrderListByPeriod", "startDate is null")
+            }
+
+            // LocalDate to LocalDateTime
+            val tStartDate: LocalDateTime = startDate.atStartOfDay() ?: LocalDate.now().atStartOfDay()
+            val tEndDate: LocalDateTime = endDate?.atStartOfDay()?: LocalDate.now().atTime(23,59,59)
+
+            println("### $tStartDate --- $tEndDate")
+
+
+            val orderList = orderRepo.findByUserIdAndOrderedAtBetween(user, tStartDate, tEndDate, customPage)
+            var result: List<Any> = mutableListOf()
+
+            orderList.forEach { it ->
+                val orderDetail = orderDetailRepo.findFirstByOrderId(it)
+                val orderCount = orderDetailRepo.countByOrderId(it)
+                val order = mapOf(
+                    "orderId" to it.orderId,
+                    "orderName" to orderDetail!!.productId.name + " x" +orderDetail.quantity + " 외 " + (orderCount-1) + "건",
+                    "paymentId" to it.paymentId,
+                    "totalPrice" to it.totalPrice,
+                    "orderState" to it.orderState,
+                    "trackingNo" to it.trackingNo,
+                    "memo" to it.memo,
+                    "orderedAt" to it.orderedAt
+                )
+                result = result + order
+            }
+
+            return Triple("success", "getOrderListAll", result)
+
+        } catch (e: Exception) {
+            return Triple("fail", "getOrderListAll", "program error : $e")
+        }
+    }
+    //
+
+
+
     @Transactional
     fun addOrder(authResponse: AuthenticationResponse,
                  orderRequest: OrderRequest): Triple<String, String, Any>
@@ -30,7 +124,7 @@ class OrderService @Autowired constructor(
             val user = jwtService.extractedUserInfo(authResponse)
 
             // 주문 정보 생성
-            var order = orderRepo.save(Order(userId = user))
+            val order = orderRepo.save(Order(userId = user))
 
             // 주문 상세 정보 생성
             var totalPrice: Long = 0
@@ -54,13 +148,15 @@ class OrderService @Autowired constructor(
 
             // 주문 총액 업데이트
             order.totalPrice = totalPrice
-            orderRepo.save(order)
 
             // 결과값 재구성
             val result = mapOf(
-                "orderId" to order.orderId,
-                "price" to order.totalPrice,
-                "orderName" to "${order.orderId} - ${user.username}님의 주문건"
+                "storeId" to storeId,
+                "channelKey" to channelKey,
+                "paymentId" to "devbabys_shop_payment_${order.orderId}",
+                "orderName" to "${order.orderId} - ${user.username}님의 주문건",
+                "totalAmount" to order.totalPrice,
+                "nextUrl" to "order/complete"
             )
 
             return Triple("success", "addOrder", result)
@@ -70,8 +166,55 @@ class OrderService @Autowired constructor(
         }
     }
 
-    fun completeOrder(orderRequest: OrderRequest): Triple<String, String, String> {
-        val orderId = orderRequest.paymentId!!.substring(22)
+    fun completeOrder(orderResponse: OrderResponse): Triple<String, String, String> {
+        try {
+            val orderId = orderResponse.paymentId.substring(22)
+
+            // orderState = 1, 결제 완료 상태로 변경
+            orderResponse.txId?.let { orderRepo.updateOrderStateAndTxIdById(orderId.toLong(), it, 1) }
+            return Triple("success", "completeOrder", orderId)
+        } catch (e: Exception) {
+            return Triple("fail", "completeOrder", "program error : $e")
+        }
+    }
+
+    fun failOrder(orderResponse: OrderResponse): Triple<String, String, String> {
+        try {
+            val orderId = orderResponse.paymentId.substring(22)
+            // orderState = 99, 결제 실패 상태로 변경
+            orderRepo.updateOrderStateAndTxIdById(orderId.toLong(), orderResponse.txId, 99)
+
+            return Triple("success", "completeOrder", orderId)
+        } catch (e: Exception) {
+            return Triple("fail", "completeOrder", "program error : $e")
+        }
+    }
+
+    fun changeOrderState(orderStateRequest: OrderStateRequest): Triple<String, String, String> {
+        try {
+            val orderId = orderStateRequest.orderId
+            val order = orderRepo.findById(orderId).orElse(null)
+                ?: return Triple("fail", "changeOrderState", "orderId not exist")
+
+            order.orderState = orderStateRequest.orderState
+            orderRepo.save(order)
+
+            return Triple("success", "changeOrderState", orderId.toString())
+        } catch (e: Exception) {
+            return Triple("fail", "changeOrderState", "program error : $e")
+        }
+    }
+
+    fun getOrder(orderResponse: OrderResponse): Triple<String, String, String> {
+        try {
+            val orderId = orderResponse.paymentId.substring(22)
+            
+
+            return Triple("success", "completeOrder", orderId)
+        } catch (e: Exception) {
+            return Triple("fail", "completeOrder", "program error : $e")
+        }
+    }
 
         /*
         *     fetch("/payment/complete", async (req, res) => {
@@ -109,8 +252,4 @@ class OrderService @Autowired constructor(
         // 결제 검증 실패
         res.status(400).send(e);
     }});*/
-
-        return Triple("success", "completeOrder", "test")
-    }
-
 }

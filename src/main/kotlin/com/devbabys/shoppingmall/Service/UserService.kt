@@ -110,39 +110,47 @@ class UserService @Autowired constructor(
         }
     }
 
+    // 2024-08-26 회원 정보는 주소를 사용하지 않기로 협의
     fun updateUser(authenticationResponse: AuthenticationResponse, userInfoRequest: UserInfoRequest): Triple<String, String, String> {
         try {
             val response = jwtService.validateToken(authenticationResponse) // return value : email
 
             val user = userRepo.findByEmail(response) ?: return Triple("fail", "updateUser", "invalid user")
 
-            var userInfo = userInfoRepo.findByUserId(user)
+            //var userInfo = userInfoRepo.findByUserId(user)
 
-            if (userInfoRequest.password != "") {
+            if (!userInfoRequest.password.isNullOrEmpty()) {
                 user.password = passwordEncoder.encode(userInfoRequest.password)
             }
 
             if ( (userInfoRequest.username == "")
-                || (userInfoRequest.phoneNumber == "")
-                || (userInfoRequest.zipCode == "")
-                || (userInfoRequest.address == "")
-                || (userInfoRequest.detailAddress == "")
+//                || (userInfoRequest.phoneNumber == "")
+//                || (userInfoRequest.zipCode == "")
+//                || (userInfoRequest.address == "")
+//                || (userInfoRequest.detailAddress == "")
                 ) {
                 return Triple("fail", "updateUser", "invalid request")
             }
             else {
-                if (userInfo == null) {
-                    userInfo = UserInfo(userId = user, phoneNumber = userInfoRequest.phoneNumber, zipCode = userInfoRequest.zipCode, detailAddress = userInfoRequest.detailAddress)
-                } else {
-                    userInfo.phoneNumber = userInfoRequest.phoneNumber
-                    userInfo.zipCode = userInfoRequest.zipCode
-                    userInfo.address = userInfoRequest.address
-                    userInfo.detailAddress = userInfoRequest.detailAddress
-                }
-                userRepo.save(user)
-                userInfoRepo.save(userInfo)
+//                if (userInfo == null) {
+//                    userInfo = UserInfo(userId = user, phoneNumber = userInfoRequest.phoneNumber, zipCode = userInfoRequest.zipCode, detailAddress = userInfoRequest.detailAddress)
+//                } else {
+//                    userInfo.phoneNumber = userInfoRequest.phoneNumber
+//                    userInfo.zipCode = userInfoRequest.zipCode
+//                    userInfo.address = userInfoRequest.address
+//                    userInfo.detailAddress = userInfoRequest.detailAddress
+//                }
 
-                return Triple("success", "updateUser", "")
+                user.username = userInfoRequest.username
+
+                if (userInfoRequest.password == "") {
+                    userRepo.updateUsernameById(user.userId, user.username)
+                } else {
+                    user.password?.let { userRepo.updateUsernameAndPasswordById(user.userId, user.username, it) }
+                }
+//                userInfoRepo.save(userInfo)
+
+                return Triple("success", "updateUser", user.userId.toString())
             }
         } catch (e: Exception) {
             println("Service : UserService : updateUser : [Catch Error] $e")
