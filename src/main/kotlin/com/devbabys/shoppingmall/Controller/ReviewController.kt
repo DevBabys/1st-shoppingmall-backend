@@ -26,7 +26,7 @@ class ReviewController @Autowired constructor(
      * 사용자별 리뷰 리스트
      */
     @GetMapping("review/list")
-    fun getReviews(@RequestHeader("Authorization") authRequest: AuthenticationResponse, pageable: Pageable): ResponseEntity<Map<String, Any>> {
+    fun getReviewsByUser(@RequestHeader("Authorization") authRequest: AuthenticationResponse, pageable: Pageable): ResponseEntity<Map<String, Any>> {
         val (response, description, value) = reviewService.getReviewList(authRequest, pageable)
         val result = mapOf("result" to response, "description" to description, "value" to value)
 
@@ -37,7 +37,7 @@ class ReviewController @Autowired constructor(
      * 상품별 리뷰 리스트
      */
     @GetMapping("review/list/{productId}")
-    fun getProductReviews(@PathVariable productId: Long, pageable: Pageable) : ResponseEntity<Map<String, Any>> {
+    fun getReviewsByProduct(@PathVariable productId: Long, pageable: Pageable) : ResponseEntity<Map<String, Any>> {
         val (response, description, value) = reviewService.getProductReviewList(productId, pageable)
         val result = mapOf("result" to response, "description" to description, "value" to value)
 

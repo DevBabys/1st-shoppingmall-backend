@@ -16,20 +16,17 @@ data class ProductReview (
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    var productId : Product, // 참조되는 상품 ID
+    var product : Product, // 참조되는 상품 ID
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    var userId: User, // 참조되는 유저 ID
+    var user: User, // 참조되는 유저 ID
 
     @Column(nullable = false)
     var rating: Int, // 리뷰 평점
 
     @Column(columnDefinition = "TEXT")
     var comment: String? = null, // 리뷰 내용
-
-    @Column(nullable = false)
-    var likes: Int, // 좋아요 수
 
     @Column(nullable = false, updatable = false)
     var createAt: LocalDateTime = LocalDateTime.now()
