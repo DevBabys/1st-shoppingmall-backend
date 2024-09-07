@@ -20,4 +20,5 @@ interface OrderDetailRepo: JpaRepository<OrderDetail, Long> {
        WHERE o.userId = :userId
     """)
     fun findDistinctProductIdsByUserId(userId: User): List<Long>
+    fun findFirstByUserIdAndProductId(userId: User, productId: Product): OrderDetail?
 }

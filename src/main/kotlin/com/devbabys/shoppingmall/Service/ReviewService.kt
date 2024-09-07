@@ -25,7 +25,7 @@ class ReviewService @Autowired constructor(
             val product = productRepo.findById(reviewRequest.productId).orElse(null)
                 ?: return Triple("fail", "addReview", "product not exist")
 
-            val isProductOrder = orderDetailRepo.findByUserIdAndProductId(user, product)
+            val isProductOrder = orderDetailRepo.findFirstByUserIdAndProductId(user, product)
 
             // 주문한 제품에 대해서만 리뷰 추가
             if(isProductOrder == null){
@@ -52,7 +52,6 @@ class ReviewService @Autowired constructor(
 
             // OrderDetail에서 주문한 제품 리스트 조회
             val productList = orderDetailRepo.findDistinctProductIdsByUserId(user)
-            println("일단 여기")
            val reviewList = reviewRepo.findByUserIdAndProductIdIn(user, productList,customPage)
 
             var result: List<Any> = mutableListOf()
