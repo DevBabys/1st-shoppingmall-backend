@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface OrderDetailRepo: JpaRepository<OrderDetail, Long> {
-    fun findByUserIdAndProductId(userId: User, productId: Product): OrderDetail?
-    fun findByOrderId(orderId: Order): List<OrderDetail>?
     fun findFirstByOrderId(orderId: Order): OrderDetail?
     fun countByOrderId(orderId: Order): Long
     @Query("""

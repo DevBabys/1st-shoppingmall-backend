@@ -59,7 +59,7 @@ class ReviewController @Autowired constructor(
      * 리뷰 삭제
      */
     @DeleteMapping("review/delete")
-    fun deleteReview(@RequestHeader("Authorization") authRequest: AuthenticationResponse, reviewRequest: ReviewRequest) : ResponseEntity<Map<String, String>> {
+    fun deleteReview(@RequestHeader("Authorization") authRequest: AuthenticationResponse, @RequestBody reviewRequest: ReviewRequest) : ResponseEntity<Map<String, String>> {
         val (response, description, value) = reviewService.deleteReview(authRequest, reviewRequest)
         val result = mapOf("result" to response, "description" to description, "value" to value)
 
