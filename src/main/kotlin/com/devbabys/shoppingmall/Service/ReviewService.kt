@@ -83,7 +83,7 @@ class ReviewService @Autowired constructor(
         try {
             var customPage = pageable
             if (pageable.pageNumber > 0) {
-                customPage = PageRequest.of(pageable.pageNumber, pageable.pageSize )
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
             }
 
             val product = productRepo.findById(productId).orElse(null)
