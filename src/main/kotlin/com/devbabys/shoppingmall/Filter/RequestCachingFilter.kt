@@ -3,12 +3,16 @@ package com.devbabys.shoppingmall.Filter
 import jakarta.servlet.*
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
+import org.springframework.boot.web.servlet.FilterRegistrationBean
+import org.springframework.context.annotation.Bean
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 
 @Component
+@Order(1)  // 순서를 명시하여 우선 적용되도록 설정 (1이 가장 높은 우선순위)
 class RequestCachingFilter : Filter {
     /* #################### 리퀘스트 데이터 캐시화 관련 필터 ####################
     * 요청 데이터를 캐시화 하는 필터
@@ -17,8 +21,10 @@ class RequestCachingFilter : Filter {
     * ###########################################################*/
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         println("########## RequestCachingFilter Process ##########")
-        if (request is HttpServletRequest) {
-            val requestUri = request.requestURI
+        val wrappedRequest = if (request is HttpServletRequest) CachedBodyHttpServletRequest(request) else request
+
+        if (wrappedRequest is HttpServletRequest) {
+            val requestUri = wrappedRequest.requestURI
 
             // 특정 URL 패턴을 확인하고 필터 처리 여부 결정: 멀티 파트의 경우 캐시화를 하면 오류가 발생하므로 제외함
             if (requestUri.startsWith("/product/add")
@@ -26,10 +32,10 @@ class RequestCachingFilter : Filter {
                     //|| requestUri.startsWith("/order/complete")
                 ) {
                 // 특정 URL일 경우 필터 처리를 생략
+                println("request")
                 chain.doFilter(request, response)
                 return
             }
-            val wrappedRequest = if (request is HttpServletRequest) CachedBodyHttpServletRequest(request) else request
             chain.doFilter(wrappedRequest, response)
         }
     }
