@@ -42,41 +42,38 @@ class CertainUserAccessInterceptor  @Autowired constructor(
                 return false
             }
 
-        // 요청에 JSON 형식의 데이터가 있으면 로직 수행
-        if (request.contentType != null && request.contentType.contains("application/json")) {
-            try {
-                // 예외처리 : 요청 주소가 카트일 경우 >>> 상세 경로는 UriConfig 파일에서 certSellerAllowedUrls 변수 확인
-                if (requestURI.startsWith("/cart/")) { // 카트 관련 API 처리
-                    val requestData = convertJSONtoString(request, "cartId") // 요청 데이터 문자열로 변환
-                    val cart = cartRepo.findById(requestData!!.toLong()).orElse(null)
+        try {
+            // 예외처리 : 요청 주소가 카트일 경우 >>> 상세 경로는 UriConfig 파일에서 certSellerAllowedUrls 변수 확인
+            if (requestURI.startsWith("/cart/")) { // 카트 관련 API 처리
+                val requestData = convertJSONtoString(request, "cartId") // 요청 데이터 문자열로 변환
+                val cart = cartRepo.findById(requestData!!.toLong()).orElse(null)
 
-                    if (cart == null) {
-                        httpResponse(response, "fail", "url: $requestURI / message : cartId not found")
-                        return false
-                    }
-                    else if (cart.userId.userId != user.userId && userAuth.grade > 2) {
-                        httpResponse(response, "fail", "url: $requestURI / message : user has not edit or delete permissions")
-                        return false
-                    }
+                if (cart == null) {
+                    httpResponse(response, "fail", "url: $requestURI / message : cartId not found")
+                    return false
                 }
-                else if (requestURI.startsWith("/order/")) { // 주문 관련 API 처리
-                    val requestData = convertJSONtoString(request, "orderId") // 요청 데이터 문자열로 변환
-                    val order = orderRepo.findById(requestData!!.toLong()).orElse(null)
-
-                    if (order == null) {
-                        httpResponse(response, "fail", "url: $requestURI / message : orderId not found")
-                        return false
-                    }
-                    else if (order.userId.userId!= user.userId && userAuth.grade > 1) {
-                        httpResponse(response, "fail", "url: $requestURI / message : user has not edit or delete permissions")
-                        return false
-                    }
+                else if (cart.userId.userId != user.userId && userAuth.grade > 2) {
+                    httpResponse(response, "fail", "url: $requestURI / message : user has not edit or delete permissions")
+                    return false
                 }
-            } catch ( e: Exception) {
-                println("Interceptor : CertainUserAccessInterceptor : convertJSONtoString : [Catch Error] $e")
-                httpResponse(response, "fail", "url: $requestURI / message : convert JSON to string error")
-                return false
             }
+            else if (requestURI.startsWith("/order/")) { // 주문 관련 API 처리
+                val orderId = requestURI.split("/").last().toLong() // 요청 데이터 문자열로 변환
+                val order = orderRepo.findById(orderId).orElse(null)
+
+                if (order == null) {
+                    httpResponse(response, "fail", "url: $requestURI / message : orderId not found")
+                    return false
+                }
+                else if (order.userId.userId!= user.userId && userAuth.grade > 1) {
+                    httpResponse(response, "fail", "url: $requestURI / message : user has not edit or delete permissions")
+                    return false
+                }
+            }
+        } catch ( e: Exception) {
+            println("Interceptor : CertainUserAccessInterceptor : convertJSONtoString : [Catch Error] $e")
+            httpResponse(response, "fail", "url: $requestURI / message : convert JSON to string error")
+            return false
         }
         return true
     }

@@ -55,7 +55,12 @@ class OrderService @Autowired constructor(
                 result = result + order
             }
 
-            return Triple("success", "getOrderListAll", result)
+            val resultMap = mapOf(
+                "total" to orderRepo.countByUserId(user),
+                "data" to result
+            )
+
+            return Triple("success", "getOrderListAll", resultMap)
 
         } catch (e: Exception) {
             return Triple("fail", "getOrderListAll", "program error : $e")
@@ -90,6 +95,7 @@ class OrderService @Autowired constructor(
             val orderList = orderRepo.findByUserIdAndOrderedAtBetween(user, tStartDate, tEndDate, customPage)
             var result: List<Any> = mutableListOf()
 
+            var totalCnt = 0
             orderList.forEach { it ->
                 val orderDetail = orderDetailRepo.findFirstByOrderId(it)
                 val orderCount = orderDetailRepo.countByOrderId(it)
@@ -104,15 +110,53 @@ class OrderService @Autowired constructor(
                     "orderedAt" to it.orderedAt
                 )
                 result = result + order
+                totalCnt++
             }
 
-            return Triple("success", "getOrderListAll", result)
+            val resultMap = mapOf(
+                "total" to totalCnt,
+                "data" to result
+            )
+
+            return Triple("success", "getOrderListAll", resultMap)
 
         } catch (e: Exception) {
             return Triple("fail", "getOrderListAll", "program error : $e")
         }
     }
-    //
+
+    fun getOrderDetail(authResponse: AuthenticationResponse, orderId: Long): Triple<String, String, Any> {
+        try {
+            val orderInfo = orderRepo.findByOrderId(orderId)
+            val orderDetailInfo = orderDetailRepo.findByOrderId(orderInfo)
+
+            var detailResult: List<Any> = mutableListOf()
+            orderDetailInfo!!.forEach {
+                val temp = mapOf(
+                    "productId" to it.productId.productId,
+                    "productName" to it.productId.name,
+                    "quantity" to it.quantity
+                )
+                detailResult = detailResult + temp
+            }
+
+            val result = mapOf(
+                "orderId" to orderInfo.orderId,
+                "paymentId" to orderInfo.paymentId,
+                "totalPrice" to orderInfo.totalPrice,
+                "product" to detailResult,
+                "orderState" to orderInfo.orderState,
+                "trackingNo" to orderInfo.trackingNo,
+                "memo" to orderInfo.memo,
+                "orderedAt" to orderInfo.orderedAt
+            )
+
+            return Triple("success", "getOrderDetail", result)
+
+        } catch (e: Exception) {
+            return Triple("fail", "getOrderDetail", "program error : $e")
+        }
+    }
 
 
 
@@ -204,52 +248,4 @@ class OrderService @Autowired constructor(
             return Triple("fail", "changeOrderState", "program error : $e")
         }
     }
-
-    fun getOrder(orderResponse: OrderResponse): Triple<String, String, String> {
-        try {
-            val orderId = orderResponse.paymentId.substring(22)
-            
-
-            return Triple("success", "completeOrder", orderId)
-        } catch (e: Exception) {
-            return Triple("fail", "completeOrder", "program error : $e")
-        }
-    }
-
-        /*
-        *     fetch("/payment/complete", async (req, res) => {
-    try {
-        // 요청의 body로 paymentId가 전달되기를 기대합니다.
-        const { paymentId, orderId } = req.body;
-
-        // 1. 포트원 결제내역 단건조회 API 호출
-        const paymentResponse = await fetch(
-        `https://api.portone.io/payments/${paymentId}`,
-        { headers: { Authorization: `PortOne ${PORTONE_API_SECRET}` } },
-        );
-        if (!paymentResponse.ok)
-        throw new Error(`paymentResponse: ${await paymentResponse.json()}`);
-        const payment = await paymentResponse.json();
-
-        // 2. 고객사 내부 주문 데이터의 가격과 실제 지불된 금액을 비교합니다.
-        const order = await OrderService.findById(orderId);
-        if (order.amount === payment.amount.total) {
-        switch (payment.status) {
-            case "VIRTUAL_ACCOUNT_ISSUED": {
-            // 가상 계좌가 발급된 상태입니다.
-            // 계좌 정보를 이용해 원하는 로직을 구성하세요.
-            break;
-            }
-            case "PAID": {
-            // 모든 금액을 지불했습니다! 완료 시 원하는 로직을 구성하세요.
-            break;
-            }
-        }
-        } else {
-        // 결제 금액 불일치, 위/변조 의심
-        }
-    } catch (e) {
-        // 결제 검증 실패
-        res.status(400).send(e);
-    }});*/
 }

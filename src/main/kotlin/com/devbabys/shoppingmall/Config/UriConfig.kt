@@ -43,7 +43,7 @@ class UriConfig {
     // 관리자와 해당 유저만 접근할 수 있는 URL
     private val certUserAllowedUrls = arrayOf(
         "/cart/update", "/cart/delete",
-        "/order/update", "/order/delete"
+        "/order/list/*"
     )
 
     // CertainUserAccessInterceptor 제외 URL

@@ -37,6 +37,16 @@ class OrderController @Autowired constructor(
         return ResponseEntity.ok(result)
     }
 
+    @GetMapping("order/list/{orderId}")
+    fun getOrderDetail(@RequestHeader("Authorization") authResponse: AuthenticationResponse,
+                        @PathVariable("orderId") orderId: Long)
+            : ResponseEntity<Map<String, Any>> {
+        val (response, description, value) = orderService.getOrderDetail(authResponse, orderId)
+        val result = mapOf("result" to response, "description" to description, "value" to value)
+
+        return ResponseEntity.ok(result)
+    }
+
     @PostMapping("order/add")
     fun addOrder(@RequestHeader("Authorization") authResponse: AuthenticationResponse,
                  @RequestBody orderRequest: OrderRequest)
