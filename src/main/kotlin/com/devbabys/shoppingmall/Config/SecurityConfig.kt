@@ -43,7 +43,8 @@ class SecurityConfig(
         "/cart/list", "/cart/add", "/cart/update", "/cart/delete", // 카트 관련
         "/order/list", "order/list/*", "/order/add", "/order/complete", "/order/fail", "/order/changeState", // 주문 관련
         "/payment/toss/**", "/payment/toss/order",// 결제 관련
-        "/test" // 테스트를 위한 URL 경로
+        "/test", // 테스트를 위한 URL 경로
+        "/review/list/{productId}" // 리뷰 관련
     )
 
     /* 서블릿 필터 체인 처리

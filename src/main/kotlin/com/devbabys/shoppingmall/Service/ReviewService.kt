@@ -4,7 +4,6 @@ import com.devbabys.shoppingmall.DTO.Authentication.AuthenticationResponse
 import com.devbabys.shoppingmall.DTO.Review.ReviewRequest
 import com.devbabys.shoppingmall.Entity.ProductReview
 import com.devbabys.shoppingmall.Repository.OrderDetailRepo
-import com.devbabys.shoppingmall.Repository.OrderRepo
 import com.devbabys.shoppingmall.Repository.ProductRepo
 import com.devbabys.shoppingmall.Repository.ProductReviewRepo
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,16 +25,15 @@ class ReviewService @Autowired constructor(
             val product = productRepo.findById(reviewRequest.productId).orElse(null)
                 ?: return Triple("fail", "addReview", "product not exist")
 
-            val isProductOrder = orderDetailRepo.findByUserIdAndProductId(user, product)
+            val isProductOrder = orderDetailRepo.findFirstByUserIdAndProductId(user, product)
 
             // 주문한 제품에 대해서만 리뷰 추가
             if(isProductOrder == null){
                 return Triple("fail", "addReview", "The item is not in your order history")
             }
 
-            val review = ProductReview(productId = product, userId = user, rating = reviewRequest.rating, comment = reviewRequest.comment, likes = 0)
+            val review = ProductReview(product = product, user = user, rating = reviewRequest.rating, comment = reviewRequest.comment)
             val saveReview = reviewRepo.save(review)
-            // TODO: IMAGE SAVE
 
             return Triple("success", "addReview", saveReview.reviewId.toString())
         } catch (e: Exception) {
@@ -51,24 +49,28 @@ class ReviewService @Autowired constructor(
             }
 
             val user = jwtService.extractedUserInfo(authResponse)
-            val reviewList = reviewRepo.findByUserId(user, customPage)
+
+            // OrderDetail에서 주문한 제품 리스트 조회
+            val productList = orderDetailRepo.findDistinctProductIdsByUserId(user)
+           val reviewList = reviewRepo.findByUserIdAndProductIdIn(user, productList,customPage)
 
             var result: List<Any> = mutableListOf()
             reviewList.forEach {
-                // TODO: IMAGE GET, LIKE GET
                 val reviewDetails = mapOf(
                     "reviewId" to it.reviewId,
-                    "productId" to it.productId.productId,
+                    "productId" to it.productId,
                     "rating" to it.rating,
-                    "userName" to it.userId.username,
+                    "image" to it.image,
                     "comment" to it.comment,
                     "createAt" to it.createAt,
+                    "reviewStatus" to it.reviewStatus,
+                    "productName" to it.name,
                 )
                 result = result + reviewDetails
             }
 
             val resultMap = mapOf(
-                "total" to reviewList.size,
+                "total" to productList.size, // 주문한 제품 수 만큼 작성해야 할 + 작성할 리뷰 수
                 "data" to result
             )
             return Triple("success", "getReviewList", resultMap)
@@ -81,21 +83,20 @@ class ReviewService @Autowired constructor(
         try {
             var customPage = pageable
             if (pageable.pageNumber > 0) {
-                customPage = PageRequest.of(pageable.pageNumber, pageable.pageSize )
+                customPage = PageRequest.of(pageable.pageNumber - 1, pageable.pageSize)
             }
 
             val product = productRepo.findById(productId).orElse(null)
                 ?: return Triple("fail", "getProductReviewList", "product not found")
-            val productReviewList = reviewRepo.findByProductId(product, customPage)
+            val productReviewList = reviewRepo.findByProduct(product, customPage)
 
             var result: List<Any> = mutableListOf()
             productReviewList.forEach {
-                // TODO: IMAGE GET, LIKE GET
                 val reviewDetails = mapOf(
                     "reviewId" to it.reviewId,
-                    "productId" to it.productId.productId,
+                    "productId" to it.product.productId,
                     "rating" to it.rating,
-                    "userName" to it.userId.username,
+                    "userName" to it.user.username,
                     "comment" to it.comment,
                     "createAt" to it.createAt,
                 )
@@ -103,7 +104,7 @@ class ReviewService @Autowired constructor(
             }
 
             val resultMap = mapOf(
-                "total" to productReviewList.size,
+                "total" to reviewRepo.countByProduct(product),
                 "data" to result
             )
             return Triple("success", "getProductReviewList", resultMap)
@@ -121,24 +122,20 @@ class ReviewService @Autowired constructor(
                 ?: return Triple("fail", "updateReview", "review not found")
 
                 val user = jwtService.extractedUserInfo(authResponse)
-                if (review.userId.userId != user.userId) {
+                if (review.user.userId != user.userId) {
                     return Triple("fail", "updateReview", "Not a user-generated review")
                 }
 
                 val reviewInfo = reviewRepo.save(
                     ProductReview(
                         reviewId = review.reviewId,
-                        productId = review.productId,
-                        userId = review.userId,
+                        product = review.product,
+                        user = review.user,
                         rating = reviewRequest.rating,
                         comment = reviewRequest.comment,
-                        likes = review.likes,
                         createAt = review.createAt,
                     )
                 )
-
-                // TODO: IMAGE UPDATE OR DELETE
-
 
                 return Triple("success", "updateReview", "")
             }
@@ -155,7 +152,7 @@ class ReviewService @Autowired constructor(
                 val review = reviewRepo.findById(reviewRequest.reviewId).orElse(null)
                 val user = jwtService.extractedUserInfo(authResponse)
 
-                if (review.userId.userId != user.userId) {
+                if (review.user.userId != user.userId) {
                     return Triple("fail", "deleteReview", "Not a user-generated review")
                 }
 
