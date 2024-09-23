@@ -1,6 +1,7 @@
 package com.devbabys.shoppingmall.Repository
 
 import com.devbabys.shoppingmall.Entity.Order
+import com.devbabys.shoppingmall.Entity.ProductCategory
 import com.devbabys.shoppingmall.Entity.User
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
@@ -13,6 +14,10 @@ import java.time.LocalDateTime
 
 @Repository
 interface OrderRepo: JpaRepository<Order, Long> {
+    // 단 건 조회
+    fun findByOrderId(orderId: Long): Order
+
+    // 유저 조회
     fun findByUserId(userId: User, pageable: Pageable): List<Order>
 
     // 최근 날짜 순으로 주문 조회
@@ -35,4 +40,7 @@ interface OrderRepo: JpaRepository<Order, Long> {
         @Param("txId") txId: String?,
         @Param("orderState") orderState: Int
     ): Int
+
+    // 유저 주문 건수 조회
+    fun countByUserId(userId: User): Long
 }
