@@ -23,7 +23,6 @@
 > **GitHub** : https://github.com/DevBabys  
 > **Notion** : https://www.notion.so/ShoppingMall-ERD-42cc7fb576274bffbd351d9d241e7c8b
 * Project Information
-> **PPT** : https://docs.google.com/presentation/d/1k21m5FauVM9W0OejN_bLNB3oxGLDfavWBdHiqaCZ_NE/edit#slide=id.p  
 > **API 기능 명세서** : https://docs.google.com/spreadsheets/d/1bSlyo5-Lb6NDKC9yH98G6WUEhLEeJteOSwbB86eL2vc/edit#gid=0  
 > **데이터베이스 테이블 설계서 (ERD)** : https://docs.google.com/document/d/1tydQcgZFXc3Rx_fnkfzR2DHmZTuw1eFjfNSMJKOgbQI/edit  
 
