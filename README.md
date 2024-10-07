@@ -23,7 +23,6 @@
 > **GitHub** : https://github.com/DevBabys  
 > **Notion** : https://www.notion.so/ShoppingMall-ERD-42cc7fb576274bffbd351d9d241e7c8b
 * Project Information
-> **PPT** : https://docs.google.com/presentation/d/1k21m5FauVM9W0OejN_bLNB3oxGLDfavWBdHiqaCZ_NE/edit#slide=id.p  
 > **API 기능 명세서** : https://docs.google.com/spreadsheets/d/1bSlyo5-Lb6NDKC9yH98G6WUEhLEeJteOSwbB86eL2vc/edit#gid=0  
 > **데이터베이스 테이블 설계서 (ERD)** : https://docs.google.com/document/d/1tydQcgZFXc3Rx_fnkfzR2DHmZTuw1eFjfNSMJKOgbQI/edit  
 
@@ -56,4 +55,3 @@
 * **2024-08-29** : 프론트엔드에서 사용할 수 있도록 결제 관련 가이드 문서 작성
 * **2024-09-09** : 리뷰 보기, 리뷰 추가, 리뷰 삭제,  CRUD 구현 (예경님 작업)
 * **2024-09-23** : 주문 조회 및 기간별 주문 조회 반환값 구정(총 건 수를 반환하도록 추가), 주문 정보 상세 보기 기능 구현 및 주문자만 접근 가능하도록 인터셉터 로직 추가
-### 작성중
